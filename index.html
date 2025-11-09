@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>練習日誌アプリ (v27)</title>
+    <!-- ★ v28: タイトル変更 -->
+    <title>ワセダ_覇者への道のり (v28)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,6 +24,16 @@
                     fontFamily: {
                         sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
                     },
+                    // ★ v28: 臙脂色を定義 (早稲田カラーに近い)
+                    colors: {
+                        waseda: {
+                            DEFAULT: '#990000', // 臙脂 (濃い)
+                            dark: '#660000',
+                            light: '#CC0000',
+                            lighter: '#FFCCCC',
+                            bg: '#FFFBFB' // ほんのり赤みのある背景
+                        }
+                    }
                 },
             },
         }
@@ -36,14 +47,15 @@
         #page-settings { display: block; }
         
         .form-input {
-            @apply w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm;
+            @apply w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-800 text-sm;
         }
         .form-label {
             @apply block text-sm font-medium text-gray-700 mb-1;
         }
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            /* ★ v28: ローダーの色を赤系に */
+            border-top: 4px solid #990000;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -64,15 +76,17 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans">
+<!-- ★ v28: 背景色をほんのり赤系に (waseda-bg) -->
+<body class="bg-gray-50 text-gray-900 font-sans">
 
     <div class="min-h-screen flex flex-col md:flex-row">
 
-        <!-- サイド ナビゲーションバー (v26と同じ) -->
+        <!-- ★ v28: サイド ナビゲーションバー (色とタイトル変更) -->
         <nav class="bg-white shadow-lg md:w-64 flex-shrink-0">
             <!-- ヘッダー (モバイル用) -->
             <div class="flex justify-between items-center p-4 md:hidden">
-                <h1 class="text-2xl font-bold text-blue-600">練習日誌</h1>
+                <!-- ★ v28: タイトルと色変更 -->
+                <h1 class="text-xl font-bold text-red-800">ワセダ_覇者への道のり</h1>
                 <button id="mobile-menu-button" class="text-gray-600 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
@@ -80,26 +94,28 @@
             
             <!-- ナビゲーション (PC用 / モバイル用メニュー) -->
             <div id="nav-content" class="hidden md:block md:mt-8">
-                <h1 class="hidden md:block text-3xl font-bold text-blue-600 px-6 mb-10">練習日誌</h1>
-                <!-- v26と同じ順序 -->
+                <!-- ★ v28: タイトルと色変更 (PC) -->
+                <h1 class="hidden md:block text-2xl font-bold text-red-800 px-6 mb-10">ワセダ_覇者への道のり</h1>
+                
                 <ul class="space-y-2 px-4">
+                    <!-- ★ v28: ホバー色変更 -->
                     <li>
-                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600" data-page="page-settings">
+                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-800" data-page="page-settings">
                             <span class="mr-3">⚙️</span> 設定
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600" data-page="page-dashboard">
+                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-800" data-page="page-dashboard">
                             <span class="mr-3">📊</span> ダッシュボード
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600" data-page="page-condition">
+                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-800" data-page="page-condition">
                             <span class="mr-3">📈</span> コンディション
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-600" data-page="page-tapering">
+                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-800" data-page="page-tapering">
                             <span class="mr-3">🗓️</span> テーパリング
                         </a>
                     </li>
@@ -110,7 +126,7 @@
         <!-- メインコンテンツ -->
         <main class="flex-grow p-6 md:p-10 overflow-auto">
             
-            <!-- 1. ダッシュボード ページ (★ v27: HTML更新) -->
+            <!-- 1. ダッシュボード ページ (★ v28: HTMLレイアウト変更) -->
             <div id="page-dashboard" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">ダッシュボード</h2>
                 
@@ -124,112 +140,89 @@
                     <span class="block sm:inline" id="dashboard-error-message"></span>
                 </div>
 
-                <!-- ★ v27: 最新データ -->
+                <!-- ★ v28: レイアウト変更 (週平均を統合) -->
                 <div id="dashboard-summary" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                     <!-- 走行距離カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">最新の走行距離</h3>
-                        <p id="summary-distance" class="text-4xl font-bold text-blue-600">– <span class="text-lg font-medium text-gray-500">km</span></p>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-2">走行距離</h3>
+                        <!-- 最新値 -->
+                        <p id="summary-distance" class="text-4xl font-bold text-red-800">– <span class="text-lg font-medium text-gray-500">km</span></p>
+                        <!-- 週平均 -->
+                        <p id="avg-distance" class="text-sm text-gray-500 mt-1">週平均: – km/日</p>
+                        <!-- 前日比 -->
                         <div id="summary-distance-change" class="mt-2 text-sm text-gray-500 h-5">
                             <span>–</span> (<span>–</span>)
                         </div>
                     </div>
                     <!-- 朝体重カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">最新の朝体重</h3>
-                        <p id="summary-morning-weight" class="text-4xl font-bold text-green-600">– <span class="text-lg font-medium text-gray-500">kg</span></p>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-2">朝体重</h3>
+                        <p id="summary-morning-weight" class="text-4xl font-bold text-red-800">– <span class="text-lg font-medium text-gray-500">kg</span></p>
+                        <p id="avg-morning-weight" class="text-sm text-gray-500 mt-1">週平均: – kg</p>
                         <div id="summary-morning-weight-change" class="mt-2 text-sm text-gray-500 h-5">
                             <span>–</span> (<span>–</span>)
                         </div>
                     </div>
                     <!-- 夜体重カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">最新の夜体重</h3>
-                        <p id="summary-evening-weight" class="text-4xl font-bold text-emerald-600">– <span class="text-lg font-medium text-gray-500">kg</span></p>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-2">夜体重</h3>
+                        <p id="summary-evening-weight" class="text-4xl font-bold text-red-800">– <span class="text-lg font-medium text-gray-500">kg</span></p>
+                        <p id="avg-evening-weight" class="text-sm text-gray-500 mt-1">週平均: – kg</p>
                         <div id="summary-evening-weight-change" class="mt-2 text-sm text-gray-500 h-5">
                             <span>–</span> (<span>–</span>)
                         </div>
                     </div>
                     <!-- 起床時脈拍カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">最新の起床時脈拍</h3>
-                        <p id="summary-waking-hr" class="text-4xl font-bold text-red-600">– <span class="text-lg font-medium text-gray-500">bpm</span></p>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-2">起床時脈拍</h3>
+                        <p id="summary-waking-hr" class="text-4xl font-bold text-red-800">– <span class="text-lg font-medium text-gray-500">bpm</span></p>
+                        <p id="avg-waking-hr" class="text-sm text-gray-500 mt-1">週平均: – bpm</p>
                         <div id="summary-waking-hr-change" class="mt-2 text-sm text-gray-500 h-5">
                             <span>–</span> (<span>–</span>)
                         </div>
                     </div>
                     <!-- 睡眠時間カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">最新の睡眠時間</h3>
-                        <p id="summary-sleep" class="text-4xl font-bold text-purple-600">– <span class="text-lg font-medium text-gray-500">時間</span></p>
+                        <h3 class="text-lg font-semibold text-gray-600 mb-2">睡眠時間</h3>
+                        <p id="summary-sleep" class="text-4xl font-bold text-red-800">– <span class="text-lg font-medium text-gray-500">時間</span></p>
+                        <p id="avg-sleep" class="text-sm text-gray-500 mt-1">週平均: – 時間</p>
                         <div id="summary-sleep-change" class="mt-2 text-sm text-gray-500 h-5">
                             <span>–</span> (<span>–</span>)
                         </div>
                     </div>
                 </div>
                 
-                <!-- ★ v27: 週平均データ -->
-                <h3 class="text-2xl font-semibold mb-6 mt-12">直近7日間平均</h3>
-                <div id="dashboard-weekly-average" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                    <!-- 平均走行距離カード -->
-                    <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">平均走行距離</h3>
-                        <p id="avg-distance" class="text-3xl font-bold text-blue-600">– <span class="text-lg font-medium text-gray-500">km/日</span></p>
-                        <p class="text-xs text-gray-400 mt-2 h-4"> (10km未満除外)</p>
-                    </div>
-                    <!-- 平均朝体重カード -->
-                    <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">平均朝体重</h3>
-                        <p id="avg-morning-weight" class="text-3xl font-bold text-green-600">– <span class="text-lg font-medium text-gray-500">kg</span></p>
-                        <p class="text-xs text-gray-400 mt-2 h-4">&nbsp;</p>
-                    </div>
-                    <!-- 平均夜体重カード -->
-                    <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">平均夜体重</h3>
-                        <p id="avg-evening-weight" class="text-3xl font-bold text-emerald-600">– <span class="text-lg font-medium text-gray-500">kg</span></p>
-                        <p class="text-xs text-gray-400 mt-2 h-4">&nbsp;</p>
-                    </div>
-                    <!-- 平均起床時脈拍カード -->
-                    <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">平均起床時脈拍</h3>
-                        <p id="avg-waking-hr" class="text-3xl font-bold text-red-600">– <span class="text-lg font-medium text-gray-500">bpm</span></p>
-                        <p class="text-xs text-gray-400 mt-2 h-4">&nbsp;</p>
-                    </div>
-                    <!-- 平均睡眠時間カード -->
-                    <div class="bg-white p-6 rounded-2xl shadow-lg">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-2">平均睡眠時間</h3>
-                        <p id="avg-sleep" class="text-3xl font-bold text-purple-600">– <span class="text-lg font-medium text-gray-500">時間</span></p>
-                        <p class="text-xs text-gray-400 mt-2 h-4">&nbsp;</p>
-                    </div>
-                </div>
+                <!-- ★ v28: 週平均のセクション (v27) を削除 -->
+                
             </div>
 
-            <!-- 2. コンディション記録 ページ (★ v27: HTML更新) -->
+            <!-- 2. コンディション記録 ページ (★ v28: チェックボックス色変更) -->
             <div id="page-condition" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">コンディション記録</h2>
                 
-                <!-- グラフ表示切り替え (v26と同じ) -->
+                <!-- グラフ表示切り替え -->
                 <div id="chart-controls" class="bg-white p-4 rounded-2xl shadow-lg mb-6 flex flex-wrap gap-4 items-center">
                     <h4 class="text-lg font-semibold text-gray-700 mr-4">表示項目:</h4>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" id="toggle-distance" class="chart-toggle form-checkbox text-blue-600 rounded focus:ring-blue-500" data-dataset-index="0">
+                        <!-- ★ v28: 色変更 -->
+                        <input type="checkbox" id="toggle-distance" class="chart-toggle form-checkbox text-red-800 rounded focus:ring-red-700" data-dataset-index="0">
                         <span class="text-gray-700">走行距離</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" id="toggle-morning-weight" class="chart-toggle form-checkbox text-green-600 rounded focus:ring-green-500" data-dataset-index="1" checked>
+                        <input type="checkbox" id="toggle-morning-weight" class="chart-toggle form-checkbox text-red-800 rounded focus:ring-red-700" data-dataset-index="1" checked>
                         <span class="text-gray-700">朝体重</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" id="toggle-evening-weight" class="chart-toggle form-checkbox text-emerald-600 rounded focus:ring-emerald-500" data-dataset-index="2">
+                        <input type="checkbox" id="toggle-evening-weight" class="chart-toggle form-checkbox text-red-800 rounded focus:ring-red-700" data-dataset-index="2">
                         <span class="text-gray-700">夕体重</span>
                     </label>
                     <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" id="toggle-waking-hr" class="chart-toggle form-checkbox text-red-600 rounded focus:ring-red-500" data-dataset-index="3" checked>
+                        <input type="checkbox" id="toggle-waking-hr" class="chart-toggle form-checkbox text-red-800 rounded focus:ring-red-700" data-dataset-index="3" checked>
                         <span class="text-gray-700">起床時脈拍</span>
                     </label>
                 </div>
                 
-                <!-- ★ v27: 週平均表示エリア -->
+                <!-- 週平均表示エリア (v27と同じ) -->
                 <div id="chart-averages" class="bg-white p-4 rounded-2xl shadow-lg mb-6">
                     <h4 class="text-lg font-semibold text-gray-700 mb-2">直近7日間平均</h4>
                     <div id="chart-averages-content" class="flex flex-wrap gap-x-6 gap-y-2 text-gray-600">
@@ -245,12 +238,12 @@
                 </div>
             </div>
 
-            <!-- 3. テーパリング計画 ページ (v26と同じ) -->
+            <!-- 3. テーパリング計画 ページ (★ v28: ボタン色変更) -->
             <div id="page-tapering" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">テーパリング計画</h2>
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
                     
-                    <!-- テーパリングの原則 (v26と同じ) -->
+                    <!-- テーパリングの原則 (v27と同じ) -->
                     <div class="mb-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                         <h3 class="text-lg font-semibold text-yellow-800 mb-3">テーパリングの原則</h3>
                         <div class="space-y-2 text-gray-700">
@@ -270,14 +263,14 @@
                         </div>
                     </div>
 
-                    <!-- 新規計画ボタン (v26と同じ) -->
+                    <!-- ★ v28: ボタン色変更 -->
                     <div class="mb-6">
-                         <button id="new-plan-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto">
+                         <button id="new-plan-button" class="bg-red-800 hover:bg-red-900 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto">
                             新規テーパリング計画を作成
                         </button>
                     </div>
 
-                    <!-- 新規計画フォーム (v26と同じ) -->
+                    <!-- 新規計画フォーム (v27と同じ) -->
                     <div id="plan-form-container" class="hidden mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
                         <h3 class="text-xl font-semibold text-gray-800 mb-6">新規計画</h3>
                         
@@ -296,7 +289,7 @@
                             <div>
                                 <label class="form-label font-bold">「日平均」走行距離</label>
                                 <p class="mt-2 text-lg">
-                                    <span id="plan-avg-distance" class="font-bold text-blue-600">--</span>
+                                    <span id="plan-avg-distance" class="font-bold text-red-800">--</span>
                                     <span class="text-sm text-gray-600"> km/日</span>
                                 </p>
                                 <p class="text-xs text-gray-500">（レース日・期間から自動計算。10km未満除外）</p>
@@ -314,9 +307,9 @@
                             </div>
                         </div>
                         
-                        <!-- 計算ボタン (v26と同じ) -->
+                        <!-- ★ v28: ボタン色変更 -->
                         <div class="mt-8">
-                            <button id="calculate-plan-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300">
+                            <button id="calculate-plan-button" class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300">
                                 計画を計算
                             </button>
                         </div>
@@ -330,7 +323,7 @@
                 </div>
             </div>
 
-            <!-- 4. 設定 ページ (v26と同じ) -->
+            <!-- 4. 設定 ページ (★ v28: ボタン・ラジオボタン色変更) -->
             <div id="page-settings" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">設定</h2>
                 
@@ -342,11 +335,12 @@
                     </p>
                     <div class="flex space-x-6">
                         <label class="flex items-center">
-                            <input type="radio" id="data-source-csv" name="dataSource" value="csv" class="form-radio text-blue-600 focus:ring-blue-500" checked>
+                            <!-- ★ v28: 色変更 -->
+                            <input type="radio" id="data-source-csv" name="dataSource" value="csv" class="form-radio text-red-800 focus:ring-red-700" checked>
                             <span class="ml-2 text-gray-700">CSV自動連携</span>
                         </label>
                         <label class="flex items-center">
-                            <input type="radio" id="data-source-manual" name="dataSource" value="manual" class="form-radio text-blue-600 focus:ring-blue-500">
+                            <input type="radio" id="data-source-manual" name="dataSource" value="manual" class="form-radio text-red-800 focus:ring-red-700">
                             <span class="ml-2 text-gray-700">手動データ入力</span>
                         </label>
                     </div>
@@ -357,7 +351,7 @@
                     <h3 class="text-xl font-semibold mb-4">2. CSV自動連携</h3>
                     <p class="text-gray-700 mb-6 text-sm">
                         各月のシートを「ファイル > 共有 > ウェブに公開」で <strong class="text-red-600">CSV形式</strong> で公開し、
-                        発行されたURLを <strong class="text-blue-600">1行に1つずつ</strong>、すべて貼り付けてください。
+                        発行されたURLを <strong class="text-red-800">1行に1つずつ</strong>、すべて貼り付けてください。
                     </p>
                     <div>
                         <label for="csv-urls" class="form-label font-bold">公開CSVのURL一覧 (1行に1URL)</label>
@@ -378,11 +372,11 @@
                     </div>
                 </div>
 
-                <!-- 4. 列マッピング (v26と同じ) -->
+                <!-- 4. 列マッピング (v27と同じ) -->
                 <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
                     <h3 class="text-xl font-semibold mb-4">4. 列設定 (CSV連携のみ)</h3>
                     <p class="text-gray-700 mb-6 text-sm">
-                        <strong class="text-blue-600">CSV自動連携</strong> を使う場合、シートの「何列目」にどのデータが入っているか <strong class="text-blue-600">アルファベット (A, B, G など)</strong> で設定してください。<br>
+                        <strong class="text-red-800">CSV自動連携</strong> を使う場合、シートの「何列目」にどのデータが入っているか <strong class="text-red-800">アルファベット (A, B, G など)</strong> で設定してください。<br>
                         <span class="text-gray-500">※ 手動入力の場合は、この列設定は無視されます。</span>
                     </p>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -423,7 +417,8 @@
                     <p class="text-gray-700 mb-4 text-sm">
                         設定を変更したら、必ず保存ボタンを押してください。
                     </p>
-                    <button id="save-settings-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300">
+                    <!-- ★ v28: ボタン色変更 -->
+                    <button id="save-settings-button" class="bg-red-800 hover:bg-red-900 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300">
                         設定を保存
                     </button>
                     <span id="save-status" class="ml-4 text-green-600"></span>
@@ -439,7 +434,7 @@
 
     <script>
         // ----------------------------------------
-        // グローバル変数 (v26と同じ)
+        // グローバル変数 (v27と同じ)
         // ----------------------------------------
         let conditionChart = null;
         let appData = [];
@@ -447,7 +442,7 @@
         const MANUAL_DATA_STORAGE_KEY = 'practiceLogManualData';
 
         // ----------------------------------------
-        // 列アルファベット <-> 数字 変換 (v26と同じ)
+        // 列アルファベット <-> 数字 変換 (v27と同じ)
         // ----------------------------------------
         function columnToLetter(colNum) {
             if (colNum === null || colNum === undefined || colNum === "" || colNum < 1) {
@@ -476,7 +471,7 @@
         }
 
         // ----------------------------------------
-        // 日付パーサー (v26と同じ)
+        // 日付パーサー (v27と同じ)
         // ----------------------------------------
         
         // 「ソート用」
@@ -567,7 +562,7 @@
         }
 
         // ----------------------------------------
-        // ページ切り替えロジック (v26と同じ)
+        // ページ切り替えロジック (v27と同じ)
         // ----------------------------------------
         const navLinks = document.querySelectorAll('.nav-link');
         const pages = document.querySelectorAll('.page-content');
@@ -584,8 +579,9 @@
             
             navLinks.forEach(link => {
                 const isActive = link.dataset.page === pageId;
-                link.classList.toggle('bg-blue-50', isActive);
-                link.classList.toggle('text-blue-600', isActive);
+                // ★ v28: 色変更
+                link.classList.toggle('bg-red-50', isActive);
+                link.classList.toggle('text-red-800', isActive);
                 link.classList.toggle('font-semibold', isActive);
             });
         }
@@ -607,7 +603,7 @@
         });
 
         // ----------------------------------------
-        // 設定 (v26と同じ)
+        // 設定 (v27と同じ)
         // ----------------------------------------
         const csvUrlsInput = document.getElementById('csv-urls');
         const manualDataInput = document.getElementById('manual-data-input');
@@ -724,7 +720,7 @@
         }
 
         // ----------------------------------------
-        // データ取得・解析処理 (v26と同じ)
+        // データ取得・解析処理 (v27と同じ)
         // ----------------------------------------
         
         function fetchWithTimeout(url, timeout = 10000) { // 10秒タイムアウト
@@ -845,18 +841,16 @@
         async function loadAndDisplayData() {
             const loadingEl = document.getElementById('dashboard-loading');
             const summaryEl = document.getElementById('dashboard-summary');
-            // ★ v27: 平均セクションも取得
-            const avgSummaryEl = document.getElementById('dashboard-weekly-average');
+            // ★ v28: 週平均セクションは削除されたので、取得しない
             const errorEl = document.getElementById('dashboard-error');
             
-            if (!loadingEl || !summaryEl || !errorEl || !avgSummaryEl) {
+            if (!loadingEl || !summaryEl || !errorEl) {
                 console.error("Dashboard UI elements not found.");
                 return;
             }
 
             loadingEl.style.display = 'flex';
             summaryEl.style.display = 'none';
-            avgSummaryEl.style.display = 'none'; // ★ v27: 平均も非表示
             errorEl.style.display = 'none';
 
             try {
@@ -919,11 +913,10 @@
                 }
 
                 updateDashboard(appData);
-                updateConditionChart(appData); // ★ v26: グラフも更新
+                updateConditionChart(appData); 
 
                 loadingEl.style.display = 'none';
                 summaryEl.style.display = 'grid';
-                avgSummaryEl.style.display = 'grid'; // ★ v27: 平均も表示
 
             } catch (error) {
                 console.error("Failed to load and display data:", error);
@@ -935,21 +928,18 @@
             const loadingEl = document.getElementById('dashboard-loading');
             const errorEl = document.getElementById('dashboard-error');
             const errorMsgEl = document.getElementById('dashboard-error-message');
-            // ★ v27: 平均セクションも取得
-            const avgSummaryEl = document.getElementById('dashboard-weekly-average');
 
             if (loadingEl) loadingEl.style.display = 'none';
-            if (avgSummaryEl) avgSummaryEl.style.display = 'none'; // ★ v27: 平均も非表示
             if (errorEl) errorEl.style.display = 'block';
             if (errorMsgEl) errorMsgEl.textContent = message;
         }
 
 
         // ----------------------------------------
-        // ★ v27: ダッシュボードの更新 (週平均を追加)
+        // ★ v28: ダッシュボードの更新 (レイアウト統合)
         // ----------------------------------------
         
-        // v26と同じヘルパー関数
+        // v27と同じヘルパー関数
         function findChangeData(data, key) {
             if (!data || data.length === 0) return null;
             
@@ -993,12 +983,7 @@
             return result;
         }
         
-        /**
-         * ★ v27: 直近7日間の平均を計算するヘルパー関数
-         * @param {Array} data - ソート済みのappData
-         * @param {string} key - 'distance', 'morningWeight', 'sleep' など
-         * @returns {number | null} - 平均値 (計算不能なら null)
-         */
+        // v27と同じヘルパー関数
         function calculateWeeklyAverage(data, key) {
             if (!data || data.length === 0) {
                 return null;
@@ -1022,18 +1007,14 @@
             let includedDays = 0;
             const totalValue = recentData.reduce((sum, day) => {
                 const value = day[key];
-                // 値が有効かチェック (null, undefined, NaN を除外)
                 if (value !== null && value !== undefined && !isNaN(parseFloat(value))) {
                     const numValue = parseFloat(value);
-                    
-                    // 走行距離の場合のみ外れ値ルールを適用
                     if (key === 'distance') {
                         if (numValue >= 10) { 
                             includedDays++;
                             return sum + numValue;
                         }
                     } else {
-                        // 他のは0でも含める (例: 脈拍や体重)
                         includedDays++;
                         return sum + numValue;
                     }
@@ -1049,81 +1030,107 @@
         }
 
 
-        // v26をベースに週平均ロジックを追加
+        // ★ v28: レイアウト統合に合わせて更新
         function updateDashboard(data) {
-            // --- 1. 最新データの表示 (v26と同じ) ---
-            const latestMetrics = [
-                { key: 'distance', el: document.getElementById('summary-distance'), changeEl: document.getElementById('summary-distance-change'), unit: 'km' },
-                { key: 'morningWeight', el: document.getElementById('summary-morning-weight'), changeEl: document.getElementById('summary-morning-weight-change'), unit: 'kg' },
-                { key: 'eveningWeight', el: document.getElementById('summary-evening-weight'), changeEl: document.getElementById('summary-evening-weight-change'), unit: 'kg' },
-                { key: 'wakingHr', el: document.getElementById('summary-waking-hr'), changeEl: document.getElementById('summary-waking-hr-change'), unit: 'bpm' },
-                { key: 'sleep', el: document.getElementById('summary-sleep'), changeEl: document.getElementById('summary-sleep-change'), unit: '時間' },
-            ];
             
-            if (!data || data.length === 0) {
-                latestMetrics.forEach(m => {
-                    if (m.el) m.el.innerHTML = `– <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
-                    if (m.changeEl) m.changeEl.innerHTML = `<span>–</span> (<span>–</span>)`;
-                });
-            } else {
-                latestMetrics.forEach(m => {
-                    if (!m.el || !m.changeEl) {
-                        console.warn(`Dashboard elements for ${m.key} not found.`);
-                        return;
-                    }
-                    const changeData = findChangeData(data, m.key);
-                    
-                    if (changeData && changeData.latest !== null) {
-                        m.el.innerHTML = `${changeData.latest.toFixed(1)} <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
-                    } else {
-                        m.el.innerHTML = `– <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
-                    }
-                    
-                    if (changeData && changeData.diff !== null) {
-                        const diff = changeData.diff;
-                        const percent = changeData.percent;
-                        const isGoodWhenDown = m.key.includes('Weight') || m.key.includes('Hr');
-                        const defaultColor = diff > 0 ? 'text-green-600' : (diff < 0 ? 'text-red-600' : 'text-gray-500');
-                        const goodWhenDownColor = diff < 0 ? 'text-green-600' : (diff > 0 ? 'text-red-600' : 'text-gray-500');
-                        const color = isGoodWhenDown ? goodWhenDownColor : defaultColor;
-                        const sign = diff > 0 ? '+' : '';
-                        
-                        m.changeEl.innerHTML = `
-                            <span class="${color} font-semibold">${sign}${diff.toFixed(1)}</span>
-                            <span class="text-gray-500">(${sign}${percent.toFixed(1)}%)</span>
-                        `;
-                    } else {
-                        m.changeEl.innerHTML = `<span>–</span> (<span>–</span>)`;
-                    }
-                });
-            }
-            
-            // --- 2. ★ v27: 週平均の表示 ---
-            const avgMetrics = [
-                { key: 'distance', el: document.getElementById('avg-distance'), unit: 'km/日' },
-                { key: 'morningWeight', el: document.getElementById('avg-morning-weight'), unit: 'kg' },
-                { key: 'eveningWeight', el: document.getElementById('avg-evening-weight'), unit: 'kg' },
-                { key: 'wakingHr', el: document.getElementById('avg-waking-hr'), unit: 'bpm' },
-                { key: 'sleep', el: document.getElementById('avg-sleep'), unit: '時間' },
+            const metrics = [
+                { 
+                    key: 'distance', 
+                    el: document.getElementById('summary-distance'), 
+                    changeEl: document.getElementById('summary-distance-change'), 
+                    avgEl: document.getElementById('avg-distance'),
+                    unit: 'km', 
+                    avgUnit: 'km/日'
+                },
+                { 
+                    key: 'morningWeight', 
+                    el: document.getElementById('summary-morning-weight'), 
+                    changeEl: document.getElementById('summary-morning-weight-change'), 
+                    avgEl: document.getElementById('avg-morning-weight'),
+                    unit: 'kg', 
+                    avgUnit: 'kg'
+                },
+                { 
+                    key: 'eveningWeight', 
+                    el: document.getElementById('summary-evening-weight'), 
+                    changeEl: document.getElementById('summary-evening-weight-change'), 
+                    avgEl: document.getElementById('avg-evening-weight'),
+                    unit: 'kg', 
+                    avgUnit: 'kg'
+                },
+                { 
+                    key: 'wakingHr', 
+                    el: document.getElementById('summary-waking-hr'), 
+                    changeEl: document.getElementById('summary-waking-hr-change'), 
+                    avgEl: document.getElementById('avg-waking-hr'),
+                    unit: 'bpm', 
+                    avgUnit: 'bpm'
+                },
+                { 
+                    key: 'sleep', 
+                    el: document.getElementById('summary-sleep'), 
+                    changeEl: document.getElementById('summary-sleep-change'), 
+                    avgEl: document.getElementById('avg-sleep'),
+                    unit: '時間', 
+                    avgUnit: '時間'
+                },
             ];
 
-            avgMetrics.forEach(m => {
-                if (!m.el) {
-                    console.warn(`Dashboard average element for ${m.key} not found.`);
+            if (!data || data.length === 0) {
+                metrics.forEach(m => {
+                    if (m.el) m.el.innerHTML = `– <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
+                    if (m.avgEl) m.avgEl.textContent = `週平均: – ${m.avgUnit}`;
+                    if (m.changeEl) m.changeEl.innerHTML = `<span>–</span> (<span>–</span>)`;
+                });
+                return;
+            }
+
+            // 各メトリクスを更新
+            metrics.forEach(m => {
+                if (!m.el || !m.changeEl || !m.avgEl) {
+                    console.warn(`Dashboard elements for ${m.key} not found.`);
                     return;
                 }
-                const avgValue = calculateWeeklyAverage(data, m.key);
-                if (avgValue !== null) {
-                    m.el.innerHTML = `${avgValue.toFixed(1)} <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
+                
+                // 1. 最新値と前日比
+                const changeData = findChangeData(data, m.key);
+                
+                if (changeData && changeData.latest !== null) {
+                    m.el.innerHTML = `${changeData.latest.toFixed(1)} <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
                 } else {
                     m.el.innerHTML = `– <span class="text-lg font-medium text-gray-500">${m.unit}</span>`;
+                }
+                
+                if (changeData && changeData.diff !== null) {
+                    const diff = changeData.diff;
+                    const percent = changeData.percent;
+                    const isGoodWhenDown = m.key.includes('Weight') || m.key.includes('Hr');
+                    const defaultColor = diff > 0 ? 'text-green-600' : (diff < 0 ? 'text-red-600' : 'text-gray-500');
+                    const goodWhenDownColor = diff < 0 ? 'text-green-600' : (diff > 0 ? 'text-red-600' : 'text-gray-500');
+                    const color = isGoodWhenDown ? goodWhenDownColor : defaultColor;
+                    const sign = diff > 0 ? '+' : '';
+                    
+                    m.changeEl.innerHTML = `
+                        <span class="${color} font-semibold">${sign}${diff.toFixed(1)}</span>
+                        <span class="text-gray-500">(${sign}${percent.toFixed(1)}%)</span>
+                    `;
+                } else {
+                    m.changeEl.innerHTML = `<span>–</span> (<span>–</span>)`;
+                }
+                
+                // 2. 週平均
+                const avgValue = calculateWeeklyAverage(data, m.key);
+                if (avgValue !== null) {
+                    m.avgEl.textContent = `週平均: ${avgValue.toFixed(1)} ${m.avgUnit}`;
+                } else {
+                    m.avgEl.textContent = `週平均: – ${m.avgUnit}`;
                 }
             });
         }
 
 
         // ----------------------------------------
-        // Chart.js (★ v27: スケール調整と平均表示)
+        // Chart.js (★ v28: グラフ色変更)
         // ----------------------------------------
         function initializeChart() {
             try {
@@ -1141,7 +1148,8 @@
                             { 
                                 label: '走行距離 (km)', 
                                 data: [], 
-                                borderColor: 'rgb(59, 130, 246)', // blue-600
+                                // ★ v28: グラフ色変更
+                                borderColor: 'rgb(220, 38, 38)', // red-600
                                 yAxisID: 'yDistance', 
                                 spanGaps: true,
                                 hidden: true 
@@ -1149,7 +1157,8 @@
                             { 
                                 label: '朝体重 (kg)', 
                                 data: [], 
-                                borderColor: 'rgb(34, 197, 94)', // green-500
+                                // ★ v28: グラフ色変更
+                                borderColor: 'rgb(244, 63, 94)', // rose-500
                                 yAxisID: 'yWeight', 
                                 spanGaps: true,
                                 hidden: false 
@@ -1157,7 +1166,8 @@
                             { 
                                 label: '夕体重 (kg)', 
                                 data: [], 
-                                borderColor: 'rgb(5, 150, 105)', // emerald-600
+                                // ★ v28: グラフ色変更
+                                borderColor: 'rgb(234, 88, 12)', // orange-600
                                 yAxisID: 'yWeight', 
                                 spanGaps: true,
                                 hidden: true 
@@ -1165,7 +1175,8 @@
                             { 
                                 label: '起床時脈拍', 
                                 data: [], 
-                                borderColor: 'rgb(239, 68, 68)', // red-500
+                                // ★ v28: グラフ色変更
+                                borderColor: 'rgb(153, 27, 27)', // red-800
                                 yAxisID: 'yHR', 
                                 spanGaps: true,
                                 hidden: false 
@@ -1184,17 +1195,15 @@
                                 type: 'linear', 
                                 position: 'left', 
                                 title: { display: true, text: '体重 (kg)' },
-                                // ★ v26: スケール調整
-                                ticks: { stepSize: 1 }, // 1kg単位
-                                grace: '10%' // 上下に10%の余裕を持たせる
+                                ticks: { stepSize: 1 }, 
+                                grace: '10%' 
                             },
                             yHR: { 
                                 type: 'linear', 
                                 position: 'right', 
                                 title: { display: true, text: '脈拍 (bpm)' }, 
                                 grid: { drawOnChartArea: false },
-                                // ★ v26: スケール調整
-                                ticks: { stepSize: 5 }, // 5bpm単位
+                                ticks: { stepSize: 5 }, 
                                 grace: '10%'
                             },
                             yDistance: {
@@ -1214,13 +1223,12 @@
             }
         }
 
-        // ★ v27: チェックボックスと平均表示を連動
+        // ★ v28: 平均値のテキスト色を変更
         function updateConditionChart(data) {
             if (!conditionChart) return;
             
             const avgContentEl = document.getElementById('chart-averages-content');
             
-            // データがまだ読み込まれていない場合は何もしない
             if (!data || data.length === 0) {
                  if(avgContentEl) avgContentEl.innerHTML = `<p class="text-gray-500">（データを読み込み中...）</p>`;
                 return;
@@ -1268,13 +1276,13 @@
                     conditionChart.options.scales.yWeight.position = 'left';
                 }
                 
-                // ★ v27: 平均値を計算して表示
+                // ★ v28: 平均値を計算して表示 (色を赤系に)
                 let avgHtml = '';
                 const avgMetrics = [
-                    { key: 'distance', label: '走行距離', unit: 'km/日', shown: toggles.distance, color: 'text-blue-600' },
-                    { key: 'morningWeight', label: '朝体重', unit: 'kg', shown: toggles.morningWeight, color: 'text-green-600' },
-                    { key: 'eveningWeight', label: '夕体重', unit: 'kg', shown: toggles.eveningWeight, color: 'text-emerald-600' },
-                    { key: 'wakingHr', label: '起床時脈拍', unit: 'bpm', shown: toggles.wakingHr, color: 'text-red-600' },
+                    { key: 'distance', label: '走行距離', unit: 'km/日', shown: toggles.distance, color: 'text-red-600' }, // blue-600 -> red-600
+                    { key: 'morningWeight', label: '朝体重', unit: 'kg', shown: toggles.morningWeight, color: 'text-rose-500' }, // green-600 -> rose-500
+                    { key: 'eveningWeight', label: '夕体重', unit: 'kg', shown: toggles.eveningWeight, color: 'text-orange-600' }, // emerald-600 -> orange-600
+                    { key: 'wakingHr', label: '起床時脈拍', unit: 'bpm', shown: toggles.wakingHr, color: 'text-red-800' }, // red-600 -> red-800
                 ];
                 
                 avgMetrics.forEach(m => {
@@ -1297,7 +1305,7 @@
         }
         
         // ----------------------------------------
-        // テーパリング計画 機能 (v26と同じ)
+        // テーパリング計画 機能 (v27と同じ)
         // ----------------------------------------
         const newPlanButton = document.getElementById('new-plan-button');
         const planFormContainer = document.getElementById('plan-form-container');
