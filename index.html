@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ワセダ_覇者への道のり (v40)</title>
+    <title>ワセダ_覇者への道のり (v41)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -100,8 +100,6 @@
             @apply bg-gray-200;
         }
     </style>
-    
-    <!-- ★ v40: スクリプトは </head> の直前から削除されました -->
     
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
@@ -1223,7 +1221,7 @@
 
 
         // ----------------------------------------
-        // Chart.js (v38: グラフ破棄処理を追加)
+        // Chart.js (★ v38: グラフ破棄処理を追加)
         // ----------------------------------------
         function initializeChart() {
             // ★ v38: 既存チャートの破棄
@@ -1981,8 +1979,14 @@
             
             // ★ v34: Firebase 初期化
             try {
-                // __firebase_config は環境変数として提供される
-                const firebaseConfig = JSON.parse(__firebase_config);
+                // ★ v41: __firebase_config の存在を安全にチェック
+                const firebaseConfigString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+                const firebaseConfig = JSON.parse(firebaseConfigString);
+
+                if (!firebaseConfig.apiKey) {
+                    throw new Error("Firebase config is missing or invalid. Check environment variables.");
+                }
+                
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
@@ -2000,7 +2004,7 @@
 
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
-                showError("アプリの初期化に失敗しました。");
+                showError("アプリの初期化に失敗しました。"); 
                 return;
             }
             
