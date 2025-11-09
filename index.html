@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>練習日誌アプリ (v9)</title>
+    <title>練習日誌アプリ (v10)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -281,114 +281,37 @@
 
     <script>
         // ----------------------------------------
-        // グローバル変数 (v6と同じ)
+        // ダッシュボードの更新 (★ v10: NULLチェック追加)
         // ----------------------------------------
-        let conditionChart = null;
-        let appData = [];
-        const SETTINGS_STORAGE_KEY = 'practiceLogSettingsV5';
+        function updateDashboard(data) {
+            // 要素を取得
+            const distEl = document.getElementById('summary-distance');
+            const weightEl = document.getElementById('summary-morning-weight');
+            const sleepEl = document.getElementById('summary-sleep');
+            
+            // ★ 要素が存在するか必ず確認
+            if (!distEl || !weightEl || !sleepEl) {
+                console.warn("Dashboard summary elements (summary-distance, summary-morning-weight, or summary-sleep) not found. HTML might be incomplete.");
+                return; // 要素がなければ、エラーを出さずに処理を中断
+            }
 
-        // ----------------------------------------
-        // ページ切り替えロジック (v6と同じ)
-        // ----------------------------------------
-        const navLinks = document.querySelectorAll('.nav-link');
-        const pages = document.querySelectorAll('.page-content');
-        const defaultPage = 'page-dashboard';
-
-        function showPage(pageId) {
-            pages.forEach(page => { page.style.display = 'none'; });
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) { 
-                targetPage.style.display = 'block'; 
-            } else {
-                console.error(`Page with id ${pageId} not found.`);
+            if (!data || data.length === 0) {
+                // データがない場合の表示
+                distEl.innerHTML = `-- <span class="text-lg font-medium text-gray-500">km</span>`;
+                weightEl.innerHTML = `-- <span class="text-lg font-medium text-gray-500">kg</span>`;
+                sleepEl.innerHTML = `-- <span class="text-lg font-medium text-gray-500">時間</span>`;
+                return;
             }
             
-            navLinks.forEach(link => {
-                const isActive = link.dataset.page === pageId;
-                link.classList.toggle('bg-blue-50', isActive);
-                link.classList.toggle('text-blue-600', isActive);
-                link.classList.toggle('font-semibold', isActive);
-            });
-        }
+            // nullを除外して最新のデータを取得 (v9と同じ)
+            const lastDistance = [...data].reverse().find(d => d.distance != null)?.distance ?? '--';
+            const lastMorningWeight = [...data].reverse().find(d => d.morningWeight != null)?.morningWeight ?? '--';
+            const lastSleep = [...data].reverse().find(d => d.sleep != null)?.sleep ?? '--';
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const pageId = link.dataset.page;
-                showPage(pageId);
-                const navContent = document.getElementById('nav-content');
-                if (window.innerWidth < 768) {
-                    navContent.classList.add('hidden');
-                }
-            });
-        });
-
-        document.getElementById('mobile-menu-button').addEventListener('click', () => {
-            document.getElementById('nav-content').classList.toggle('hidden');
-        });
-
-        // ----------------------------------------
-        // 設定 (v6と同じ)
-        // ----------------------------------------
-        const csvUrlsInput = document.getElementById('csv-urls');
-        const mappingInputs = {
-            date: document.getElementById('col-date'),
-            distance: document.getElementById('col-distance'),
-            morningWeight: document.getElementById('col-morning-weight'),
-            eveningWeight: document.getElementById('col-evening-weight'),
-            wakingHr: document.getElementById('col-waking-hr'),
-            practiceHr: document.getElementById('col-practice-hr'),
-            sleep: document.getElementById('col-sleep'),
-        };
-        const saveButton = document.getElementById('save-settings-button');
-        const saveStatus = document.getElementById('save-status');
-
-        function saveSettings() {
-            try {
-                const settings = {
-                    csvUrls: csvUrlsInput.value.split('\n').filter(url => url.trim() !== ''),
-                    mapping: {}
-                };
-                for (const key in mappingInputs) {
-                    if (mappingInputs[key]) {
-                        settings.mapping[key] = mappingInputs[key].value;
-                    }
-                }
-                localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-                saveStatus.textContent = '保存しました！';
-                setTimeout(() => { saveStatus.textContent = ''; }, 2000);
-            } catch (error) {
-                console.error("Failed to save settings:", error);
-                saveStatus.textContent = '保存に失敗しました。';
-            }
-        }
-
-        function loadSettings() {
-            try {
-                const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
-                if (savedSettings) {
-                    const settings = JSON.parse(savedSettings);
-                    if (settings.csvUrls && csvUrlsInput) {
-                        csvUrlsInput.value = (settings.csvUrls || []).join('\n');
-                    }
-                    if (settings.mapping) {
-                        for (const key in settings.mapping) {
-                            if (mappingInputs[key]) {
-                                mappingInputs[key].value = settings.mapping[key];
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to load settings from localStorage:", error);
-                localStorage.removeItem(SETTINGS_STORAGE_KEY);
-            }
-        }
-        
-        if (saveButton) {
-            saveButton.addEventListener('click', saveSettings);
-        } else {
-            console.error("Save button not found.");
+            // 要素の存在が確認済みなので、安全にinnerHTMLを設定
+            distEl.innerHTML = `${lastDistance} <span class="text-lg font-medium text-gray-500">km</span>`;
+            weightEl.innerHTML = `${lastMorningWeight} <span class="text-lg font-medium text-gray-500">kg</span>`;
+            sleepEl.innerHTML = `${lastSleep} <span class="text-lg font-medium text-gray-500">時間</span>`;
         }
 
         // ----------------------------------------
