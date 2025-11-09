@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ワセダ_覇者への道のり (v29)</title>
+    <title>ワセダ_覇者への道のり (v30)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts (Inter + Noto Sans JP + ★ v29: Noto Serif JP) -->
+    <!-- Google Fonts (★ v30: Klee One (教科書体) を追加) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- ★ v29: Noto Serif JP (和風フォント) を追加 -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
+    <!-- ★ v30: Noto Serif JP (明朝) を Klee One (教科書体) に変更 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Klee+One:wght@600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- Chart.js (グラフ描画ライブラリ) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -23,8 +23,8 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
-                        // ★ v29: 和風フォントを 'serif' として定義
-                        serif: ['"Noto Serif JP"', 'serif'],
+                        // ★ v30: フォント定義を 'klee' に変更
+                        klee: ['"Klee One"', 'serif'],
                     },
                     colors: {
                         waseda: {
@@ -45,12 +45,11 @@
             -moz-osx-font-smoothing: grayscale;
         }
         .page-content { display: none; }
-        /* ★ v29: デフォルト表示を「ダッシュボード」に変更 */
         #page-dashboard { display: block; }
         
-        /* ★ v29: 見出しに和風フォントを適用 */
+        /* ★ v30: 見出しフォントを 'font-klee' に変更 */
         h1, h2, h3, h4, h5, h6 {
-            @apply font-serif;
+            @apply font-klee;
         }
 
         .form-input {
@@ -81,21 +80,21 @@
             @apply px-4 py-3 whitespace-nowLrap text-sm text-gray-700;
         }
         
-        /* ★ v29: マニュアルのアコーディオン スタイル */
+        /* v29と同じ */
         details > summary {
-            list-style: none; /* デフォルトの三角を消す */
+            list-style: none; 
             cursor: pointer;
         }
         details > summary::-webkit-details-marker {
-            display: none; /* デフォルトの三角を消す (Chrome) */
+            display: none; 
         }
         details > summary::after {
-            content: '▼'; /* 閉じてる時のアイコン */
+            content: '▼'; 
             float: right;
             transition: transform 0.2s;
         }
         details[open] > summary::after {
-            transform: rotate(180deg); /* 開いてる時のアイコン */
+            transform: rotate(180deg); 
         }
 
     </style>
@@ -104,7 +103,7 @@
 
     <div class="min-h-screen flex flex-col md:flex-row">
 
-        <!-- サイド ナビゲーションバー (v28と同じ) -->
+        <!-- サイド ナビゲーションバー (v29と同じ) -->
         <nav class="bg-white shadow-lg md:w-64 flex-shrink-0">
             <!-- ヘッダー (モバイル用) -->
             <div class="flex justify-between items-center p-4 md:hidden">
@@ -146,39 +145,40 @@
         <!-- メインコンテンツ -->
         <main class="flex-grow p-6 md:p-10 overflow-auto">
             
-            <!-- 1. ダッシュボード ページ (★ v29: HTMLレイアウト変更、マニュアル追加) -->
+            <!-- 1. ダッシュボード ページ (★ v30: マニュアル書式修正) -->
             <div id="page-dashboard" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">ダッシュボード</h2>
 
-                <!-- ★ v29: 使い方マニュアル (アコーディオン) -->
+                <!-- ★ v30: 使い方マニュアル (書式修正) -->
                 <details class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-4 border-red-800">
                     <summary class="text-xl font-semibold text-gray-800">はじめに (使い方マニュアル)</summary>
                     <div class="mt-4 pt-4 border-t border-gray-200 text-gray-700 space-y-3 text-sm">
                         <p>このアプリは、日々の練習日誌データ（CSVまたは手動入力）を読み込み、コンディションやテーパリング計画を管理するためのツールです。</p>
                         <ol class="list-decimal list-inside space-y-2">
                             <li>
-                                <strong>[設定] ページ (最重要):</strong>
+                                <strong class="font-semibold text-gray-800">[設定] ページ (最重要):</strong>
                                 <ul class="list-disc list-inside ml-4 mt-1">
                                     <li>最初に、このページでデータ入力方法（CSV連携 or 手動）を選択します。</li>
-                                    <li>**CSV連携:** 「ウェブに公開」したCSVのURLを貼り付けます。CSV連携の場合は「列設定」でアルファベット（A, Bなど）の指定が**必須**です。</li>
-                                    <li>**手動入力:** 走行距離データを「日付,距離」の形式で貼り付けます。（この場合、列設定は不要です）</li>
+                                    <!-- ★ v30: ** を <strong class-=""> に変更 -->
+                                    <li><strong class="font-semibold text-red-800">CSV連携:</strong> 「ウェブに公開」したCSVのURLを貼り付けます。CSV連携の場合は「列設定」でアルファベット（A, Bなど）の指定が<strong>必須</strong>です。</li>
+                                    <li><strong class="font-semibold text-red-800">手動入力:</strong> 走行距離データを「日付,距離」の形式で貼り付けます。（この場合、列設定は不要です）</li>
                                     <li>最後に必ず「設定を保存」ボタンを押してください。データは保存後にリロードすると反映されます。</li>
                                 </ul>
                             </li>
                             <li>
-                                <strong>[ダッシュボード] ページ:</strong>
+                                <strong class="font-semibold text-gray-800">[ダッシュボード] ページ:</strong>
                                 <ul class="list-disc list-inside ml-4 mt-1">
                                     <li>読み込んだデータの「最新値」「前日比」「直近7日間平均」を一覧表示します。</li>
                                 </ul>
                             </li>
                             <li>
-                                <strong>[コンディション] ページ:</strong>
+                                <strong class="font-semibold text-gray-800">[コンディション] ページ:</strong>
                                 <ul class="list-disc list-inside ml-4 mt-1">
                                     <li>データの推移をグラフで視覚化します。チェックボックスで表示項目を切り替えられます。</li>
                                 </ul>
                             </li>
                             <li>
-                                <strong>[テーパリング] ページ:</strong>
+                                <strong class="font-semibold text-gray-800">[テーパリング] ページ:</strong>
                                 <ul class="list-disc list-inside ml-4 mt-1">
                                     <li>レース日と期間から、推奨される走行距離の減衰計画を自動で計算します。</li>
                                 </ul>
@@ -197,12 +197,11 @@
                     <span class="block sm:inline" id="dashboard-error-message"></span>
                 </div>
 
-                <!-- ★ v29: レイアウト変更 (上段3つ) -->
+                <!-- 上段3つ (v29と同じ) -->
                 <div id="dashboard-summary-top" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <!-- 走行距離カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <h3 class="text-lg font-semibold text-gray-600 mb-2">走行距離</h3>
-                        <!-- ★ v29: 色を v27 に戻す -->
                         <p id="summary-distance" class="text-4xl font-bold text-blue-600">– <span class="text-lg font-medium text-gray-500">km</span></p>
                         <p id="avg-distance" class="text-sm text-gray-500 mt-1">週平均: – km/日</p>
                         <div id="summary-distance-change" class="mt-2 text-sm text-gray-500 h-5">
@@ -228,7 +227,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- ★ v29: レイアウト変更 (下段2つ) -->
+                <!-- 下段2つ (v29と同じ) -->
                 <div id="dashboard-summary-bottom" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                      <!-- 起床時脈拍カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
@@ -252,7 +251,7 @@
                 
             </div>
 
-            <!-- 2. コンディション記録 ページ (v28と同じ) -->
+            <!-- 2. コンディション記録 ページ (v29と同じ) -->
             <div id="page-condition" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">コンディション記録</h2>
                 
@@ -277,7 +276,7 @@
                     </label>
                 </div>
                 
-                <!-- 週平均表示エリア (v28と同じ) -->
+                <!-- 週平均表示エリア (v29と同じ) -->
                 <div id="chart-averages" class="bg-white p-4 rounded-2xl shadow-lg mb-6">
                     <h4 class="text-lg font-semibold text-gray-700 mb-2">直近7日間平均</h4>
                     <div id="chart-averages-content" class="flex flex-wrap gap-x-6 gap-y-2 text-gray-600">
@@ -293,12 +292,12 @@
                 </div>
             </div>
 
-            <!-- 3. テーパリング計画 ページ (v28と同じ) -->
+            <!-- 3. テーパリング計画 ページ (v29と同じ) -->
             <div id="page-tapering" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">テーパリング計画</h2>
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
                     
-                    <!-- テーパリングの原則 (v28と同じ) -->
+                    <!-- テーパリングの原則 (v29と同じ) -->
                     <div class="mb-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                         <h3 class="text-lg font-semibold text-yellow-800 mb-3">テーパリングの原則</h3>
                         <div class="space-y-2 text-gray-700">
@@ -318,14 +317,14 @@
                         </div>
                     </div>
 
-                    <!-- 新規計画ボタン (v28と同じ) -->
+                    <!-- 新規計画ボタン (v29と同じ) -->
                     <div class="mb-6">
                          <button id="new-plan-button" class="bg-red-800 hover:bg-red-900 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto">
                             新規テーパリング計画を作成
                         </button>
                     </div>
 
-                    <!-- 新規計画フォーム (v28と同じ) -->
+                    <!-- 新規計画フォーム (v29と同じ) -->
                     <div id="plan-form-container" class="hidden mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
                         <h3 class="text-xl font-semibold text-gray-800 mb-6">新規計画</h3>
                         
@@ -362,7 +361,7 @@
                             </div>
                         </div>
                         
-                        <!-- 計算ボタン (v28と同じ) -->
+                        <!-- 計算ボタン (v29と同じ) -->
                         <div class="mt-8">
                             <button id="calculate-plan-button" class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300">
                                 計画を計算
@@ -378,7 +377,7 @@
                 </div>
             </div>
 
-            <!-- 4. 設定 ページ (v28と同じ) -->
+            <!-- 4. 設定 ページ (v29と同じ) -->
             <div id="page-settings" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">設定</h2>
                 
@@ -426,7 +425,7 @@
                     </div>
                 </div>
 
-                <!-- 4. 列マッピング (v28と同じ) -->
+                <!-- 4. 列マッピング (v29と同じ) -->
                 <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
                     <h3 class="text-xl font-semibold mb-4">4. 列設定 (CSV連携のみ)</h3>
                     <p class="text-gray-700 mb-6 text-sm">
@@ -487,7 +486,7 @@
 
     <script>
         // ----------------------------------------
-        // グローバル変数 (v28と同じ)
+        // グローバル変数 (v29と同じ)
         // ----------------------------------------
         let conditionChart = null;
         let appData = [];
@@ -495,7 +494,7 @@
         const MANUAL_DATA_STORAGE_KEY = 'practiceLogManualData';
 
         // ----------------------------------------
-        // 列アルファベット <-> 数字 変換 (v28と同じ)
+        // 列アルファベット <-> 数字 変換 (v29と同じ)
         // ----------------------------------------
         function columnToLetter(colNum) {
             if (colNum === null || colNum === undefined || colNum === "" || colNum < 1) {
@@ -524,7 +523,7 @@
         }
 
         // ----------------------------------------
-        // 日付パーサー (v28と同じ)
+        // 日付パーサー (v29と同じ)
         // ----------------------------------------
         
         // 「ソート用」
@@ -657,7 +656,7 @@
         });
 
         // ----------------------------------------
-        // 設定 (v28と同じ)
+        // 設定 (v29と同じ)
         // ----------------------------------------
         const csvUrlsInput = document.getElementById('csv-urls');
         const manualDataInput = document.getElementById('manual-data-input');
@@ -681,6 +680,7 @@
         const settingsManualContainer = document.getElementById('settings-manual-container');
 
         function toggleDataSourceView(source) {
+            if (!settingsCsvContainer || !settingsManualContainer) return;
             if (source === 'csv') {
                 settingsCsvContainer.style.display = 'block';
                 settingsManualContainer.style.display = 'none';
@@ -690,8 +690,12 @@
             }
         }
         
-        dataSourceCsv.addEventListener('change', () => toggleDataSourceView('csv'));
-        dataSourceManual.addEventListener('change', () => toggleDataSourceView('manual'));
+        if (dataSourceCsv) {
+            dataSourceCsv.addEventListener('change', () => toggleDataSourceView('csv'));
+        }
+        if (dataSourceManual) {
+            dataSourceManual.addEventListener('change', () => toggleDataSourceView('manual'));
+        }
         
         function saveSettings() {
             try {
@@ -730,7 +734,7 @@
                 const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
                 const savedManualData = localStorage.getItem(MANUAL_DATA_STORAGE_KEY);
 
-                if (savedManualData) {
+                if (savedManualData && manualDataInput) {
                     manualDataInput.value = savedManualData;
                 }
                 
@@ -738,10 +742,10 @@
                     const settings = JSON.parse(savedSettings);
                     
                     if (settings.dataSource === 'manual') {
-                        dataSourceManual.checked = true;
+                        if (dataSourceManual) dataSourceManual.checked = true;
                         toggleDataSourceView('manual');
                     } else {
-                        dataSourceCsv.checked = true;
+                        if (dataSourceCsv) dataSourceCsv.checked = true;
                         toggleDataSourceView('csv');
                     }
                     
@@ -774,7 +778,7 @@
         }
 
         // ----------------------------------------
-        // データ取得・解析処理 (v28と同じ)
+        // データ取得・解析処理 (v29と同じ)
         // ----------------------------------------
         
         function fetchWithTimeout(url, timeout = 10000) { // 10秒タイムアウト
@@ -1365,7 +1369,7 @@
         }
         
         // ----------------------------------------
-        // テーパリング計画 機能 (v28と同じ)
+        // テーパリング計画 機能 (v29と同じ)
         // ----------------------------------------
         const newPlanButton = document.getElementById('new-plan-button');
         const planFormContainer = document.getElementById('plan-form-container');
