@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>練習日誌アプリ (v18)</title>
+    <title>練習日誌アプリ (v19)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -68,7 +68,7 @@
 
     <div class="min-h-screen flex flex-col md:flex-row">
 
-        <!-- サイド ナビゲーションバー (v17と同じ) -->
+        <!-- サイド ナビゲーションバー (v18と同じ) -->
         <nav class="bg-white shadow-lg md:w-64 flex-shrink-0">
             <!-- ヘッダー (モバイル用) -->
             <div class="flex justify-between items-center p-4 md:hidden">
@@ -109,7 +109,7 @@
         <!-- メインコンテンツ -->
         <main class="flex-grow p-6 md:p-10 overflow-auto">
             
-            <!-- 1. ダッシュボード ページ (v17と同じ) -->
+            <!-- 1. ダッシュボード ページ (v18と同じ) -->
             <div id="page-dashboard" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">ダッシュボード</h2>
                 
@@ -139,7 +139,7 @@
                 </div>
             </div>
 
-            <!-- 2. コンディション記録 ページ (v17と同じ) -->
+            <!-- 2. コンディション記録 ページ (v18と同じ) -->
             <div id="page-condition" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">コンディション記録</h2>
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
@@ -150,12 +150,12 @@
                 </div>
             </div>
 
-            <!-- 3. テーパリング計画 ページ (v17と同じ) -->
+            <!-- 3. テーパリング計画 ページ (v18と同じ) -->
             <div id="page-tapering" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">テーパリング計画</h2>
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
                     
-                    <!-- テーパリングの原則 (v17と同じ) -->
+                    <!-- テーパリングの原則 (v18と同じ) -->
                     <div class="mb-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                         <h3 class="text-lg font-semibold text-yellow-800 mb-3">テーパリングの原則</h3>
                         <div class="space-y-2 text-gray-700">
@@ -175,14 +175,14 @@
                         </div>
                     </div>
 
-                    <!-- 新規計画ボタン (v17と同じ) -->
+                    <!-- 新規計画ボタン (v18と同じ) -->
                     <div class="mb-6">
                          <button id="new-plan-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto">
                             新規テーパリング計画を作成
                         </button>
                     </div>
 
-                    <!-- 新規計画フォーム (v17と同じ) -->
+                    <!-- 新規計画フォーム (v18と同じ) -->
                     <div id="plan-form-container" class="hidden mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
                         <h3 class="text-xl font-semibold text-gray-800 mb-6">新規計画</h3>
                         
@@ -219,7 +219,7 @@
                             </div>
                         </div>
                         
-                        <!-- 計算ボタン (v17と同じ) -->
+                        <!-- 計算ボタン (v18と同じ) -->
                         <div class="mt-8">
                             <button id="calculate-plan-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300">
                                 計画を計算
@@ -235,7 +235,7 @@
                 </div>
             </div>
 
-            <!-- 4. 設定 ページ (★ v18: v17の警告文を削除) -->
+            <!-- 4. 設定 ページ (v18と同じ) -->
             <div id="page-settings" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">設定</h2>
                 
@@ -259,7 +259,6 @@
                         シートの「何列目」にどのデータが入っているか設定してください。<br>
                         (例: A列 → 1, B列 → 2, G列 → 7)
                     </p>
-                    <!-- ★ v18: v17で追加した "MM/DD" 限定の警告文を削除 -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <label for="col-date" class="form-label font-bold">日付</label>
@@ -311,66 +310,125 @@
 
     <script>
         // ----------------------------------------
-        // グローバル変数 (v17と同じ)
+        // グローバル変数 (v18と同じ)
         // ----------------------------------------
         let conditionChart = null;
         let appData = [];
         const SETTINGS_STORAGE_KEY = 'practiceLogSettingsV5';
 
         // ----------------------------------------
-        // 日付パーサー (★ v18: YYYY/MM/DD と YYYY-MM-DD にも対応)
+        // ★ v19: 日付パーサー (「ソート用」と「実日付用」に分割)
         // ----------------------------------------
+        
         /**
-         * "MM/DD", "YYYY/MM/DD", "YYYY-MM-DD" 形式の文字列を、
-         * 4月始まりを考慮した「ソート・比較用の」Dateオブジェクトに変換
-         * @param {string} dateStr - 日付文字列
-         * @returns {Date | null}
+         * ★ v19: 「ソート用」の日付パーサー
+         * "MM/DD", "YYYY/MM/DD", "YYYY-MM-DD" を、
+         * 4月始まりを考慮した「ソート・比較用の仮の年」のDateオブジェクトに変換
          */
-        function parseAppDate(dateStr) {
+        function parseDateToSort(dateStr) {
             try {
-                let month, day, year;
+                let month, day;
                 let dateObj;
 
-                if (dateStr.includes('-')) {
-                    // "YYYY-MM-DD" 形式 (例: "2024-11-03")
-                    dateObj = new Date(dateStr + "T00:00:00"); // タイムゾーンを考慮
-                } else if (dateStr.split('/').length === 3) {
-                    // "YYYY/MM/DD" 形式 (例: "2024/11/03")
-                    dateObj = new Date(dateStr + "T00:00:00");
-                } else if (dateStr.split('/').length === 2) {
-                    // "MM/DD" 形式 (例: "11/3")
-                    [month, day] = dateStr.split('/').map(Number);
-                    if (isNaN(month) || isNaN(day)) return null;
-                    // 4月始まりの年度を基準にした仮の年にマッピング
+                // 形式を正規表現でチェック
+                const ymdMatch = dateStr.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+                const mdMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})$/);
+
+                if (ymdMatch) {
+                    // "YYYY-MM-DD" または "YYYY/MM/DD"
+                    // YYYY-MM-DD は Safari で正しくパースされないため、/ に置換
+                    const parsableDateStr = dateStr.replace(/-/g, '/') + "T00:00:00";
+                    dateObj = new Date(parsableDateStr); 
+                    if (isNaN(dateObj.getTime())) return null; // 不正な日付 (2/30など)
+                    month = dateObj.getMonth() + 1;
+                    day = dateObj.getDate();
+                } else if (mdMatch) {
+                    // "MM/DD"
+                    month = parseInt(mdMatch[1], 10);
+                    day = parseInt(mdMatch[2], 10);
+                    if (month < 1 || month > 12 || day < 1 || day > 31) return null; // 不正な日付
                     const yearOffset = (month < 4) ? 1 : 0; // 1-3月は翌年扱い
-                    dateObj = new Date(2000 + yearOffset, month - 1, day);
-                    return dateObj; // ★ "MM/DD" はこの時点で返す (v17と同じロジック)
+                    return new Date(2000 + yearOffset, month - 1, day);
                 } else {
                     return null; // 不明な形式
                 }
 
-                if (isNaN(dateObj.getTime())) return null; // "2024/02/30" のような不正な日付
-
-                // --- ここからは "YYYY/MM/DD" または "YYYY-MM-DD" の処理 ---
-                
-                month = dateObj.getMonth() + 1; // 1-12
-                // 4月始まりの「年度」を基準にしたソート用の仮の年にマッピング
-                // 例: 2024/2/15 -> 2023年度 -> 2001/2/15として比較 (ソート順で後ろに来る)
-                // 例: 2024/4/1 -> 2024年度 -> 2000/4/1として比較 (ソート順で前に来る)
+                // YMD形式の場合のソート年計算
                 const sortYear = (month < 4) ? 2001 : 2000;
-                day = dateObj.getDate();
-                
-                // "MM/DD" 形式とソート順を合わせるため、仮の年 (2000/2001) でDateオブジェクトを再生成
                 return new Date(sortYear, month - 1, day);
 
             } catch (error) {
-                console.error(`Failed to parse date string: ${dateStr}`, error);
+                console.error(`Failed to parse sort date string: ${dateStr}`, error);
+                return null;
+            }
+        }
+        
+        /**
+         * ★ v19: 「実際の日付」パーサー
+         * "MM/DD" または "YYYY/MM/DD" / "YYYY-MM-DD" を、可能な限り「実際の」Dateオブジェクトに変換
+         * "MM/DD" は、現在の日付に基づいて「今年」か「去年」かを推測する
+         */
+        function parseDateToReal(dateStr) {
+            try {
+                // YMD形式はそのままDateオブジェクトにする
+                const ymdMatch = dateStr.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+                if (ymdMatch) {
+                    const parsableDateStr = dateStr.replace(/-/g, '/') + "T00:00:00";
+                    const dateObj = new Date(parsableDateStr);
+                    if (isNaN(dateObj.getTime())) return null;
+                    return dateObj;
+                }
+                
+                // MD形式は推測する
+                const mdMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})$/);
+                if (mdMatch) {
+                    const month = parseInt(mdMatch[1], 10);
+                    const day = parseInt(mdMatch[2], 10);
+                    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+                    const today = new Date();
+                    const currentYear = today.getFullYear();
+                    const currentMonth = today.getMonth() + 1; // 1-12
+                    
+                    let targetYear = currentYear;
+                    
+                    // 4月始まりの年度ロジックで年を推測
+                    // (例: 今日が 2025/2/15 (2024年度) の場合)
+                    if (currentMonth < 4) { 
+                        // 今が 1-3月 (年度末) の場合
+                        if (month < 4) {
+                            // "2/15" -> 今年の 2/15 (2025/2/15)
+                            targetYear = currentYear;
+                        } else {
+                            // "11/30" -> 去年の 11/30 (2024/11/30)
+                            targetYear = currentYear - 1;
+                        }
+                    } else {
+                        // 今が 4-12月 (年度初〜中) の場合
+                        if (month < 4) {
+                             // "2/15" -> 来年の 2/15 (例: 今 2024/11/30 なら 2025/2/15)
+                            targetYear = currentYear + 1;
+                        } else {
+                            // "11/30" -> 今年の 11/30 (例: 今 2024/11/30 なら 2024/11/30)
+                            targetYear = currentYear;
+                        }
+                    }
+                    
+                    const dateObj = new Date(targetYear, month - 1, day);
+                    if (isNaN(dateObj.getTime())) return null;
+                    return dateObj;
+                }
+                
+                return null; // 不明な形式
+            
+            } catch (error) {
+                console.error(`Failed to parse real date string: ${dateStr}`, error);
                 return null;
             }
         }
 
         // ----------------------------------------
-        // ページ切り替えロジック (v17と同じ)
+        // ページ切り替えロジック (v18と同じ)
         // ----------------------------------------
         const navLinks = document.querySelectorAll('.nav-link');
         const pages = document.querySelectorAll('.page-content');
@@ -410,7 +468,7 @@
         });
 
         // ----------------------------------------
-        // 設定 (v17と同じ)
+        // 設定 (v18と同じ)
         // ----------------------------------------
         const csvUrlsInput = document.getElementById('csv-urls');
         const mappingInputs = {
@@ -474,7 +532,7 @@
         }
 
         // ----------------------------------------
-        // データ取得・解析処理 (★ v18: dateRegex を v16 に戻す)
+        // データ取得・解析処理 (★ v19: parseDateToSort を使用)
         // ----------------------------------------
         
         function fetchWithTimeout(url, timeout = 10000) { // 10秒タイムアウト
@@ -519,8 +577,7 @@
                 }
             }
             
-            // ★ v18: dateRegexを v16 (緩い方) に戻す
-            // "YYYY-MM-DD", "YYYY/MM/DD", "MM/DD" を許可
+            // v18と同じ (緩いRegex)
             const dateRegex = /^\s*"?\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}\/\d{1,2})\s*"?\s*$/i;
             const lines = csvText.trim().split('\n');
             const data = [];
@@ -589,21 +646,21 @@
                 const combinedCsvText = csvTexts.join('\n');
                 appData = parseCSV(combinedCsvText, settings.mapping);
                 
-                // ★ v18: ソートロジック (parseAppDateが両形式に対応)
+                // ★ v19: ソートは parseDateToSort を使う
                 appData.sort((a, b) => {
-                    const dateA = parseAppDate(a.date); // "11/3" or "2024/11/3" -> Date obj
-                    const dateB = parseAppDate(b.date);
+                    const dateA = parseDateToSort(a.date);
+                    const dateB = parseDateToSort(b.date);
                     if (dateA === null) return 1;
                     if (dateB === null) return -1;
                     return dateA - dateB;
                 });
                 
-                // 重複排除ロジック (v17と同じ)
+                // 重複排除ロジック
                 const uniqueData = [];
                 const seenDates = new Set();
                 for (const item of appData) {
-                    // ★ v18: item.dateがパース可能かチェック (parseAppDateがnullを返さないか)
-                    if (item.date && parseAppDate(item.date) && !seenDates.has(item.date)) {
+                    // ★ v19: parseDateToSort でパース可能かチェック
+                    if (item.date && parseDateToSort(item.date) && !seenDates.has(item.date)) {
                         uniqueData.push(item);
                         seenDates.add(item.date);
                     }
@@ -640,7 +697,7 @@
 
 
         // ----------------------------------------
-        // ダッシュボードの更新 (v17と同じ)
+        // ダッシュボードの更新 (v18と同じ)
         // ----------------------------------------
         function updateDashboard(data) {
             const distEl = document.getElementById('summary-distance');
@@ -669,7 +726,7 @@
         }
 
         // ----------------------------------------
-        // Chart.js (グラフの初期化と更新) (v17と同じ)
+        // Chart.js (グラフの初期化と更新) (v18と同じ)
         // ----------------------------------------
         function initializeChart() {
             try {
@@ -746,18 +803,18 @@
             return `${month}/${day} (${weekday})`;
         }
 
-        // ★ v18: 「日平均」走行距離の計算ロジック (v17 + デバッグログ)
+        // ★ v19: 「日平均」走行距離の計算ロジック (parseDateToReal を使用)
         function calculateAverageDistance() {
             if (!appData || appData.length === 0) {
                 console.warn("[calcAvg] appData is empty. Returning 0.0");
                 return 0.0.toFixed(1); // 0.0 を返す
             }
 
-            // 1. appData (ソート済み) から最新の日付を取得
+            // 1. appData (ソート済み) から最新の日付を取得し、「実日付」に変換
             const latestEntry = appData[appData.length - 1];
-            const latestDate = parseAppDate(latestEntry.date);
+            const latestDate = parseDateToReal(latestEntry.date); // ★ v19 変更
             if (!latestDate) {
-                console.error("[calcAvg] Latest date could not be parsed:", latestEntry.date);
+                console.error("[calcAvg] Latest date could not be parsed to REAL date:", latestEntry.date);
                 return 0.0.toFixed(1);
             }
 
@@ -765,12 +822,12 @@
             const startDate = new Date(latestDate.getTime());
             startDate.setDate(startDate.getDate() - 20); // 21日間をカバー
 
-            // ★ デバッグログ
+            // ★ デバッグログ (西暦が2000年ではなくなるはず)
             console.log(`[calcAvg] Calculating average for 21 days from ${startDate.toLocaleDateString()} to ${latestDate.toLocaleDateString()}`);
 
             // 3. 該当期間のデータをフィルタリング
             const recentData = appData.filter(day => {
-                const d = parseAppDate(day.date);
+                const d = parseDateToReal(day.date); // ★ v19 変更
                 return d && d >= startDate && d <= latestDate;
             });
             
@@ -802,7 +859,7 @@
             return dailyAvg.toFixed(1); // 小数点第1位まで
         }
 
-        // 「新規計画」ボタンが押された時の処理 (v17と同じ)
+        // 「新規計画」ボタンが押された時の処理 (v18と同じ)
         function showNewPlanForm() {
             const avgDistance = calculateAverageDistance(); 
             if (planAvgDistanceSpan) {
@@ -816,7 +873,7 @@
             }
         }
         
-        // 「計画を計算」ボタンが押された時の処理 (v17と同じ)
+        // 「計画を計算」ボタンが押された時の処理 (v18と同じ)
         function calculateTaperPlan() {
             if (!planRaceName || !planRaceDate || !planDuration || !planFinalLoad || !planOutputContainer || !planAvgDistanceSpan) {
                 console.error("Tapering plan calculation UI elements not found.");
@@ -831,7 +888,7 @@
             const duration = parseInt(planDuration.value, 10); // 期間 (C2)
             const finalLoad = parseInt(planFinalLoad.value, 10); // 最終負荷 (C3)
 
-            // 2. バリデーション (v17と同じ)
+            // 2. バリデーション (v18と同じ)
             if (!raceDateStr || isNaN(duration) || isNaN(dailyAvgDistance) || dailyAvgDistance <= 0 || isNaN(finalLoad)) {
                 planOutputContainer.innerHTML = `<p class="text-red-600">「レース日」「期間」「負荷」を正しく入力してください。（平均距離が "0.0" または "--" の場合はデータ不足か計算できません）</p>`;
                 return;
@@ -846,13 +903,13 @@
                 return;
             }
 
-            // 3. τ (タウ) の計算 (C5) (v17と同じ)
+            // 3. τ (タウ) の計算 (C5) (v18と同じ)
             // C2 = duration, C3 = finalLoad
             // =-C2/LN(C3/100)
             const tau = -duration / Math.log(finalLoad / 100); // (C5)
 
             
-            // 4. 日毎の計画を生成し、テーブルHTMLを構築 (v17と同じ)
+            // 4. 日毎の計画を生成し、テーブルHTMLを構築 (v18と同じ)
             
             let outputHtml = `
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">${raceName} への計画</h3>
@@ -944,7 +1001,7 @@
         }
 
 
-        // イベントリスナーの割り当て (v17と同じ)
+        // イベントリスナーの割り当て (v18と同じ)
         if (newPlanButton) {
             newPlanButton.addEventListener('click', showNewPlanForm);
         } else {
@@ -959,7 +1016,7 @@
 
 
         // ----------------------------------------
-        // 初期化処理 (v17と同じ)
+        // 初期化処理 (v18と同じ)
         // ----------------------------------------
         document.addEventListener('DOMContentLoaded', () => {
             showPage(defaultPage);
