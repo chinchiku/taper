@@ -396,4 +396,504 @@
             try {
                 const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
                 if (savedSettings) {
-                    const settings = JSON.parse(sa
+                    const settings = JSON.parse(savedSettings);
+                    if (settings.csvUrls && csvUrlsInput) {
+                        csvUrlsInput.value = (settings.csvUrls || []).join('\n');
+                    }
+                    if (settings.mapping) {
+                        for (const key in settings.mapping) {
+                            if (mappingInputs[key]) {
+                                mappingInputs[key].value = settings.mapping[key];
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load settings from localStorage:", error);
+                localStorage.removeItem(SETTINGS_STORAGE_KEY);
+            }
+        }
+        
+        if (saveButton) {
+            saveButton.addEventListener('click', saveSettings);
+        } else {
+            console.error("Save button not found.");
+        }
+
+        // ----------------------------------------
+        // データ取得・解析処理 (★ v15: タイムアウト処理追加)
+        // ----------------------------------------
+        
+        /**
+         * ★ v15: タイムアウト付きのfetch関数
+         * @param {string} url - 取得するURL
+         * @param {number} timeout - タイムアウト (ミリ秒)
+         * @returns {Promise<Response>}
+         */
+        function fetchWithTimeout(url, timeout = 10000) { // 10秒タイムアウト
+            return Promise.race([
+                fetch(url),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('リクエストがタイムアウトしました')), timeout)
+                )
+            ]);
+        }
+        
+        /**
+         * ★ v15: fetchWithTimeout を使うように修正
+         */
+        async function fetchCSVData(url) {
+            // Google Sheets CSVはキャッシュされやすいので、キャッシュを回避する
+            const cacheBustUrl = `${url}&_=${new Date().getTime()}`;
+            try {
+                // ★ v15: タイムアウト付きfetchを使用
+                const response = await fetchWithTimeout(cacheBustUrl, 10000); // 10秒
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} (URL: ${url})`);
+                }
+                return await response.text();
+            } catch (error) {
+                console.error("Fetch error:", error);
+                if (error.message.includes('timeout')) {
+                    throw new Error(`データ取得がタイムアウトしました (10秒)。URLが正しいか確認してください: ${url}`);
+                }
+                if (error.message.includes('Failed to fetch')) {
+                     throw new Error('データの取得に失敗しました。CORSポリシー違反、またはネットワークエラーの可能性があります。');
+                }
+                throw error; // その他のエラーはそのまま投げる
+            }
+        }
+
+        function parseCSV(csvText, mapping) {
+            if (!mapping || !mapping.date) {
+                throw new Error("「日付」の列設定は必須です。");
+            }
+
+            const indices = {};
+            for (const key in mapping) {
+                if (mapping[key]) {
+                    indices[key] = parseInt(mapping[key], 10) - 1;
+                }
+            }
+            
+            const dateRegex = /^\s*"?\s*(\d{1,4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}\/\d{1,2})\s*"?\s*$/i;
+            const lines = csvText.trim().split('\n');
+            const data = [];
+
+            for (const line of lines) {
+                const columns = line.split(',');
+                const dateVal = columns[indices.date];
+
+                if (dateVal && dateRegex.test(dateVal)) {
+                    const cleanValue = (val) => {
+                        if (val === undefined || val === null) return null;
+                        const trimmedVal = val.trim().replace(/"/g, '');
+                        if (trimmedVal === "") return null;
+                        const num = parseFloat(trimmedVal);
+                        return isNaN(num) ? null : num;
+                    };
+                    const cleanDate = dateVal.trim().replace(/"/g, '');
+                    data.push({
+                        date: cleanDate,
+                        distance: cleanValue(columns[indices.distance]),
+                        morningWeight: cleanValue(columns[indices.morningWeight]),
+                        eveningWeight: cleanValue(columns[indices.eveningWeight]),
+                        wakingHr: cleanValue(columns[indices.wakingHr]),
+                        practiceHr: cleanValue(columns[indices.practiceHr]),
+                        sleep: cleanValue(columns[indices.sleep]),
+                    });
+                }
+            }
+            return data;
+        }
+
+        async function loadAndDisplayData() {
+            const loadingEl = document.getElementById('dashboard-loading');
+            const summaryEl = document.getElementById('dashboard-summary');
+            const errorEl = document.getElementById('dashboard-error');
+            
+            if (!loadingEl || !summaryEl || !errorEl) {
+                console.error("Dashboard UI elements not found.");
+                return;
+            }
+
+            loadingEl.style.display = 'flex';
+            summaryEl.style.display = 'none';
+            errorEl.style.display = 'none';
+
+            try {
+                const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
+                if (!savedSettings) {
+                    showError('「設定」ページで、公開CSVのURLと列設定を保存してください。');
+                    return;
+                }
+
+                const settings = JSON.parse(savedSettings);
+                if (!settings.csvUrls || settings.csvUrls.length === 0 || !settings.mapping || !settings.mapping.date) {
+                    showError('「設定」ページで、最低1つの公開CSVのURLと「日付」の列設定を完了してください。');
+                    return;
+                }
+            
+                // ★ v15: fetchCSVData (タイムアウト付き) が呼ばれる
+                const fetchPromises = settings.csvUrls.map(url => fetchCSVData(url));
+                const csvTexts = await Promise.all(fetchPromises);
+                
+                const combinedCsvText = csvTexts.join('\n');
+                appData = parseCSV(combinedCsvText, settings.mapping);
+                
+                appData.sort((a, b) => {
+                    // 日付文字列 (例: "11/3") をパース
+                    const [monthA, dayA] = a.date.split('/').map(Number);
+                    const [monthB, dayB] = b.date.split('/').map(Number);
+                    
+                    // 陸上シーズン（4月始まり）を考慮し、1-3月は翌年扱いとする
+                    const yearOffsetA = (monthA < 4) ? 1 : 0; 
+                    const yearOffsetB = (monthB < 4) ? 1 : 0;
+                    
+                    // 比較可能なDateオブジェクトを作成 (年は仮で2000年基準)
+                    const dateA = new Date(2000 + yearOffsetA, monthA - 1, dayA);
+                    const dateB = new Date(2000 + yearOffsetB, monthB - 1, dayB);
+                    
+                    return dateA - dateB;
+                });
+                
+                // 重複排除ロジック
+                const uniqueData = [];
+                const seenDates = new Set();
+                for (const item of appData) {
+                    if (!seenDates.has(item.date)) {
+                        uniqueData.push(item);
+                        seenDates.add(item.date);
+                    }
+                }
+                appData = uniqueData;
+
+                updateDashboard(appData);
+                updateConditionChart(appData);
+
+                loadingEl.style.display = 'none';
+                summaryEl.style.display = 'grid';
+
+            } catch (error) {
+                console.error("Failed to load and display data:", error);
+                showError(error.message); // ★ タイムアウトエラーもここで表示される
+            }
+        }
+
+        function showError(message) {
+            const loadingEl = document.getElementById('dashboard-loading');
+            const errorEl = document.getElementById('dashboard-error');
+            const errorMsgEl = document.getElementById('dashboard-error-message');
+
+            if (loadingEl) loadingEl.style.display = 'none'; // ★ ローダーを確実に非表示に
+            if (errorEl) errorEl.style.display = 'block';
+            if (errorMsgEl) errorMsgEl.textContent = message;
+        }
+
+
+        // ----------------------------------------
+        // ダッシュボードの更新 (v14と同じ)
+        // ----------------------------------------
+        function updateDashboard(data) {
+            // 要素を取得
+            const distEl = document.getElementById('summary-distance');
+            const weightEl = document.getElementById('summary-morning-weight');
+            const sleepEl = document.getElementById('summary-sleep');
+            
+            // ★ 要素が存在するか必ず確認
+            if (!distEl || !weightEl || !sleepEl) {
+                console.warn("Dashboard summary elements (summary-distance, summary-morning-weight, or summary-sleep) not found. HTML might be incomplete.");
+                return; // 要素がなければ、エラーを出さずに処理を中断
+            }
+
+            if (!data || data.length === 0) {
+                // データがない場合の表示
+                distEl.innerHTML = `-- <span class="text-lg font-medium text-gray-500">km</span>`;
+                weightEl.innerHTML = `-- <span class="text-lg font-medium text-gray-500">kg</span>`;
+                sleepEl.innerHTML = `-- <span class="text-lg font-medium text-gray-500">時間</span>`;
+                return;
+            }
+            
+            // nullを除外して最新のデータを取得
+            const lastDistance = [...data].reverse().find(d => d.distance != null)?.distance ?? '--';
+            const lastMorningWeight = [...data].reverse().find(d => d.morningWeight != null)?.morningWeight ?? '--';
+            const lastSleep = [...data].reverse().find(d => d.sleep != null)?.sleep ?? '--';
+
+            // 要素の存在が確認済みなので、安全にinnerHTMLを設定
+            distEl.innerHTML = `${lastDistance} <span class="text-lg font-medium text-gray-500">km</span>`;
+            weightEl.innerHTML = `${lastMorningWeight} <span class="text-lg font-medium text-gray-500">kg</span>`;
+            sleepEl.innerHTML = `${lastSleep} <span class="text-lg font-medium text-gray-500">時間</span>`;
+        }
+
+        // ----------------------------------------
+        // Chart.js (グラフの初期化と更新) (v14と同じ)
+        // ----------------------------------------
+        function initializeChart() {
+            try {
+                const ctx = document.getElementById('conditionChart');
+                if (!ctx) {
+                    console.warn("conditionChart canvas not found.");
+                    return;
+                }
+                
+                conditionChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [], datasets: [
+                            { label: '朝体重 (kg)', data: [], borderColor: 'rgb(34, 197, 94)', yAxisID: 'yWeight', spanGaps: true },
+                            { label: '夕体重 (kg)', data: [], borderColor: 'rgb(22, 163, 74)', yAxisID: 'yWeight', spanGaps: true },
+                            { label: '起床時脈拍', data: [], borderColor: 'rgb(239, 68, 68)', yAxisID: 'yHR', spanGaps: true }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { 
+                                title: { display: true, text: '日付' },
+                                ticks: { autoSkip: true, maxTicksLimit: 20 }
+                            },
+                            yWeight: { type: 'linear', position: 'left', title: { display: true, text: '体重 (kg)' } },
+                            yHR: { type: 'linear', position: 'right', title: { display: true, text: '脈拍 (bpm)' }, grid: { drawOnChartArea: false } }
+                        },
+                        plugins: { tooltip: { mode: 'index', intersect: false } }
+                    }
+                });
+            } catch (error) {
+                console.error("Failed to initialize chart:", error);
+            }
+        }
+
+        function updateConditionChart(data) {
+            if (!conditionChart || !data) return;
+
+            try {
+                const labels = data.map(d => d.date);
+                conditionChart.data.labels = labels;
+                conditionChart.data.datasets[0].data = data.map(d => d.morningWeight);
+                conditionChart.data.datasets[1].data = data.map(d => d.eveningWeight);
+                conditionChart.data.datasets[2].data = data.map(d => d.wakingHr);
+                
+                conditionChart.update();
+            } catch (error) {
+                console.error("Failed to update chart:", error);
+            }
+        }
+        
+        // ----------------------------------------
+        // テーパリング計画 機能 (v14と同じ)
+        // ----------------------------------------
+        const newPlanButton = document.getElementById('new-plan-button');
+        const planFormContainer = document.getElementById('plan-form-container');
+        const planAvgDistanceSpan = document.getElementById('plan-avg-distance');
+        const calculatePlanButton = document.getElementById('calculate-plan-button');
+        const planOutputContainer = document.getElementById('plan-output-container');
+        
+        // (入力フォームの要素)
+        const planRaceName = document.getElementById('plan-race-name');
+        const planRaceDate = document.getElementById('plan-race-date');
+        const planDuration = document.getElementById('plan-duration');
+        const planFinalLoad = document.getElementById('plan-final-load');
+
+
+        // 日付を "MM/DD (曜)" 形式にフォーマットするヘルパー関数
+        function formatDate(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const weekday = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
+            return `${month}/${day} (${weekday})`;
+        }
+
+        // 「日平均」走行距離を計算する (v14と同じ)
+        function calculateAverageDistance() {
+            if (!appData || appData.length === 0) {
+                return 0;
+            }
+            // appDataは日付順ソート済みなので、末尾21件を取得
+            const last21DaysData = appData.slice(-21);
+            
+            // 21日分の合計走行距離を計算 (nullは0として扱う)
+            const totalDistance = last21DaysData.reduce((sum, day) => {
+                return sum + (day.distance || 0);
+            }, 0);
+            
+            // 日平均を計算
+            let dailyAvg = 0;
+            if (last21DaysData.length > 0) {
+                // 取得できた日数で割る
+                dailyAvg = (totalDistance / last21DaysData.length);
+            }
+
+            return dailyAvg.toFixed(1); // 小数点第1位まで
+        }
+
+        // 「新規計画」ボタンが押された時の処理 (v14と同じ)
+        function showNewPlanForm() {
+            const avgDistance = calculateAverageDistance();
+            if (planAvgDistanceSpan) {
+                planAvgDistanceSpan.textContent = avgDistance;
+            }
+            if (planFormContainer) {
+                planFormContainer.style.display = 'block';
+            }
+            if (planOutputContainer) {
+                planOutputContainer.innerHTML = '<p class="text-gray-500">フォームに入力して「計画を計算」ボタンを押してください。</p>';
+            }
+        }
+        
+        // 「計画を計算」ボタンが押された時の処理 (v14と同じ)
+        function calculateTaperPlan() {
+            if (!planRaceName || !planRaceDate || !planDuration || !planFinalLoad || !planOutputContainer || !planAvgDistanceSpan) {
+                console.error("Tapering plan calculation UI elements not found.");
+                return;
+            }
+            
+            // 1. フォームから値を取得
+            const raceName = planRaceName.value || "（名称未設定のレース）";
+            const raceDateStr = planRaceDate.value;
+            // 「日平均」を取得 (C4)
+            const dailyAvgDistance = parseFloat(planAvgDistanceSpan.textContent); 
+            const duration = parseInt(planDuration.value, 10); // 期間 (C2)
+            const finalLoad = parseInt(planFinalLoad.value, 10); // 最終負荷 (C3)
+
+            // 2. バリデーション (v14と同じ)
+            if (!raceDateStr || isNaN(duration) || isNaN(dailyAvgDistance) || dailyAvgDistance <= 0 || isNaN(finalLoad)) {
+                planOutputContainer.innerHTML = `<p class="text-red-600">「レース日」「期間」「負荷」を正しく入力してください。（平均距離が "0.0" または "--" の場合はデータ不足か計算できません）</p>`;
+                return;
+            }
+            if (finalLoad <= 0 || finalLoad >= 100) {
+                 planOutputContainer.innerHTML = `<p class="text-red-600">「最終日の負荷」は 1% から 99% の間で入力してください。</p>`;
+                return;
+            }
+            const raceDate = new Date(raceDateStr);
+            if (isNaN(raceDate.getTime())) {
+                planOutputContainer.innerHTML = `<p class="text-red-600">有効なレース日を選択してください。</p>`;
+                return;
+            }
+
+            // 3. τ (タウ) の計算 (C5) (v14と同じ)
+            // C2 = duration, C3 = finalLoad
+            // =-C2/LN(C3/100)
+            const tau = -duration / Math.log(finalLoad / 100); // (C5)
+
+            
+            // 4. 日毎の計画を生成し、テーブルHTMLを構築 (v14と同じ)
+            
+            let outputHtml = `
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">${raceName} への計画</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
+                    <div><span class="font-semibold text-gray-600">レース日:</span> ${formatDate(raceDate)}</div>
+                    <div><span class="font-semibold text-gray-600">日平均(C4):</span> ${dailyAvgDistance} km</div>
+                    <div><span class="font-semibold text-gray-600">期間(C2):</span> ${duration} 日</div>
+                    <div><span class="font-semibold text-gray-600">τ (C5):</span> ${tau.toFixed(3)}</div>
+                </div>
+
+                <h4 class="text-lg font-semibold text-gray-800 mb-3">推奨走行距離</h4>
+                <div class="overflow-x-auto shadow rounded-lg">
+                    <table class="plan-table">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="plan-table th">日付</th>
+                                <th class="plan-table th">レースまで</th>
+                                <th class="plan-table th">経過日数 (B8)</th>
+                                <th class="plan-table th">負荷 (D8)</th>
+                                <th class="plan-table th">推奨距離 (km) (E8)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            // ループ処理でテーブルの中身を生成
+            // (duration + 1) 日前 (ベースライン) から 1日前 (最終負荷) まで
+            
+            const planDays = [];
+            
+            // まずはベースライン (9日前、経過日数 0)
+            const baselineDaysBefore = duration + 1;
+            const baselineDate = new Date(raceDate.getTime());
+            baselineDate.setDate(baselineDate.getDate() - baselineDaysBefore);
+            
+            planDays.push({
+                date: formatDate(baselineDate),
+                daysBefore: `${baselineDaysBefore} 日前`,
+                dayCounter: 0, // 経過日数 (B8)
+                loadPercent: 100.0, // 負荷 (D8)
+                distance: dailyAvgDistance // 推奨距離 (E8)
+            });
+
+            // テーパリング期間 (8日前〜1日前)
+            // dayCounter (B8) = 1 から duration (C2) まで
+            for (let dayCounter = 1; dayCounter <= duration; dayCounter++) {
+                const daysBeforeRace = duration - dayCounter + 1; // (8, 7, ... 1)
+                
+                const currentDate = new Date(raceDate.getTime());
+                currentDate.setDate(currentDate.getDate() - daysBeforeRace);
+                
+                // 負荷(D8) = EXP(-B8/$C$5)*100
+                const loadPercent = Math.exp(-dayCounter / tau) * 100;
+                
+                // 走行距離(E8) = $C$4*D8/100
+                const distance = dailyAvgDistance * (loadPercent / 100);
+                
+                planDays.push({
+                    date: formatDate(currentDate),
+                    daysBefore: `${daysBeforeRace} 日前`,
+                    dayCounter: dayCounter,
+                    loadPercent: loadPercent,
+                    distance: distance
+                });
+            }
+
+            // テーブルHTMLに行を追加
+            for (const day of planDays) {
+                 outputHtml += `
+                    <tr>
+                        <td class="plan-table td">${day.date}</td>
+                        <td class="plan-table td">${day.daysBefore}</td>
+                        <td class="plan-table td">${day.dayCounter}</td>
+                        <td class="plan-table td">${day.loadPercent.toFixed(1)} %</td>
+                        <td class="plan-table td font-bold">${day.distance.toFixed(1)} km</td>
+                    </tr>
+                `;
+            }
+
+            // テーブルを閉じる
+            outputHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">※レース当日の推奨距離は含まれていません。</p>
+            `;
+            
+            planOutputContainer.innerHTML = outputHtml;
+        }
+
+
+        // イベントリスナーの割り当て (v14と同じ)
+        if (newPlanButton) {
+            newPlanButton.addEventListener('click', showNewPlanForm);
+        } else {
+            console.error("New plan button not found.");
+        }
+        
+        if (calculatePlanButton) {
+            calculatePlanButton.addEventListener('click', calculateTaperPlan);
+        } else {
+            console.error("Calculate plan button not found.");
+        }
+
+
+        // ----------------------------------------
+        // 初期化処理 (v14と同じ)
+        // ----------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage(defaultPage);
+            loadSettings();     
+            initializeChart();  
+            loadAndDisplayData(); 
+        });
+
+    </script>
+</body>
+</html>
