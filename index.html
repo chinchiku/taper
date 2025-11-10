@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ワセダ_覇者への道のり (v49)</title>
+    <title>ワセダ_覇者への道のり (v50)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,9 +16,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     
-    <!-- ★ v46: Google API & Sign-In (GSI) を <head> に配置 -->
-    <script src="https://accounts.google.com/gsi/client" async defer onload="gisLoadedCallback()"></script>
-    <script src="https://apis.google.com/js/api.js" async defer onload="gapiLoadedCallback()"></script>
+    <!-- ★ v50: Google API & Sign-In (GSI) - onload="" を削除 -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js" async defer></script>
     
     <script>
         tailwind.config = {
@@ -367,4 +367,6 @@
                             <!-- レース日 -->
                             <div>
                                 <label for="plan-race-date" class="form-label font-bold">レース日</label>
-                                <input type="date" id="plan-race-date" class="
+                                <input type="date" id="plan-race-date" class="form-input">
+                            </div>
+        
