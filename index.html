@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ワセダ_覇者への道のり (v49)</title>
+    <title>ワセダ_覇者への道のり (v48)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,9 +16,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     
-    <!-- ★ v48: Google API & Sign-In (GSI) - onload="" を削除 -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://apis.google.com/js/api.js" async defer></script>
+    <!-- ★ v46: Google API & Sign-In (GSI) を <head> に配置 -->
+    <script src="https://accounts.google.com/gsi/client" async defer onload="gisLoadedCallback()"></script>
+    <script src="https://apis.google.com/js/api.js" async defer onload="gapiLoadedCallback()"></script>
     
     <script>
         tailwind.config = {
@@ -696,22 +696,22 @@
         }
         
         // ★ v49: スプレッドシートID抽出
-        /**
-         * Google Sheet の URL または ID から ID のみを抽出する
-         * @param {string} input - URL または ID
-         * @returns {string} 抽出されたID、または失敗時は元の入力
-         */
         function extractSpreadsheetId(input) {
             if (!input) return "";
+            input = input.trim();
+            // URLからIDを抽出 (例: .../d/THIS_IS_THE_ID/edit...)
             const urlMatch = input.match(/\/d\/([a-zA-Z0-9_-]{44})\//);
             if (urlMatch && urlMatch[1]) {
-                return urlMatch[1]; // URLからIDを抽出
+                console.log("Extracted ID from URL:", urlMatch[1]);
+                return urlMatch[1];
             }
             // IDがそのまま貼られたか (簡単なチェック)
             if (input.length === 44 && !input.includes('/') && !input.includes(':')) {
+                console.log("Input appears to be an ID:", input);
                 return input;
             }
-            // 抽出失敗 (または既にIDだった)
+            // 抽出失敗
+            console.warn("Could not extract Spreadsheet ID. Using raw input.");
             return input; 
         }
 
@@ -741,10 +741,10 @@
         }
         
         // ----------------------------------------
-        // ★ v44: Google API / GSI 認証
+        // ★ v48: Google API / GSI 認証 (ロード方法を修正)
         // ----------------------------------------
         
-        // ★ v45: グローバルコールバックを window オブジェクトにアタッチ
+        // ★ v48: グローバルコールバックを window オブジェクトにアタッチ
         window.gapiLoadedCallback = () => {
             console.log("GAPI client script loaded.");
             gapiReady = true; // GAPI スクリプト自体のロードが完了
@@ -761,7 +761,7 @@
         async function tryInitClient() {
             // ★ v45: gapi.client がロードされるまで待機
             if (!gisReady || !gapiReady || typeof gapi === 'undefined' || !gapi.client) {
-                console.log("GAPI client lib or GIS not fully loaded yet, retrying...");
+                console.log("GAPI client lib or GIS not fully loaded yet, skipping init...");
                 return;
             }
             
@@ -881,18 +881,21 @@
             try {
                 // DOM要素がロードされているか確認
                 if (!dataSourceManual || !googleClientIdInput || !googleSpreadsheetIdInput || !googleSheetNamesInput || !manualDataInput || !saveStatus) {
-                    console.error("SaveSettings: DOM elements not ready.");
-                    alert("ページの読み込みが完了していません。"); // v33のalert()の代わり
+                    const errorMsg = "設定UIの読み込みに失敗しました。";
+                    console.error(errorMsg);
+                    if(saveStatus) saveStatus.textContent = errorMsg;
+                    else alert(errorMsg); // 最悪のフォールバック
                     return;
                 }
                 
-                const rawSpreadsheetUrl = googleSpreadsheetIdInput.value;
+                const rawSpreadsheetInput = googleSpreadsheetIdInput.value;
+                const extractedId = extractSpreadsheetId(rawSpreadsheetInput);
                 
                 const settings = {
                     dataSource: dataSourceManual.checked ? 'manual' : 'google',
                     // Google
                     clientId: googleClientIdInput.value,
-                    spreadsheetId: extractSpreadsheetId(rawSpreadsheetUrl), // ★ v49: ID抽出
+                    spreadsheetId: extractedId, // ★ v49: 抽出したID
                     sheetNames: googleSheetNamesInput.value.split('\n').filter(name => name.trim() !== ''),
                     // 共通
                     mapping: {}
@@ -917,9 +920,9 @@
                     return;
                 }
                 
-                saveStatus.textContent = '保存しました！リロードしてデータを反映します。';
+                if (saveStatus) saveStatus.textContent = '保存しました！リロードしてデータを反映します。';
                 setTimeout(() => { 
-                    saveStatus.textContent = ''; 
+                    if (saveStatus) saveStatus.textContent = ''; 
                     location.reload();
                 }, 1500);
                 
@@ -935,7 +938,7 @@
             let manualData = "";
             
             try {
-                // localStorageから読み込み
+                // ★ v48: キーのタイプミスを修正
                 manualData = localStorage.getItem(MANUAL_DATA_STORAGE_KEY) || "";
                 const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY);
                 if (savedSettings) {
@@ -1106,7 +1109,7 @@
                 if (settings.dataSource === 'manual') {
                     // --- 手動データの場合 ---
                     console.log("Loading data from: Manual Input");
-                    const manualData = localStorage.getItem(MANUAL_DATA_STORAGE_KEY) || "";
+                    const manualData = localStorage.getItem(MANUAL_DATA_STORAGE_KEY) || ""; // ★ v48
                     if (!manualData) {
                         showError('「設定」ページで、手動入力データを貼り付けて保存してください。');
                         return;
@@ -1197,7 +1200,7 @@
             }
             // GAPI/GSI 特有のエラー
             if (error.result && error.result.error) {
-                message = `Google API エラー: ${error.result.error.message}`;
+                message = `Google API エラー: ${error.result.error.message} (オリジンの設定を確認してください)`;
             }
             
             if (errorMsgEl) errorMsgEl.textContent = message;
@@ -2165,15 +2168,45 @@
                 await loadTaperPlans(); // await: localStorageから計画を読み込む
                 
                 // ★ v48: GSI/GAPIのロードポーリングを開始
-                if (settings && settings.clientId) {
-                    // tryInitClient は gapiReady と gisReady をチェックし続ける
-                    // グローバルコールバック（window.gapiLoadedCallbackなど）が呼ばれることで
-                    // gapiReady/gisReady フラグが true になる
+                // tryInitClient は gapiReady と gisReady をチェックし続ける
+                // グローバルコールバック（window.gapiLoadedCallbackなど）が呼ばれることで
+                // gapiReady/gisReady フラグが true になる
+                
+                // ★ v48: GSI/GAPIのロードが完了するのを待つ (ポーリング)
+                await new Promise((resolve, reject) => {
+                    let attempts = 0;
+                    const interval = setInterval(() => {
+                        if (typeof gapi !== 'undefined' && typeof google !== 'undefined') {
+                            // スクリプト自体はロードされた
+                            if (!gapiReady) window.gapiLoadedCallback();
+                            if (!gisReady) window.gisLoadedCallback();
+                        }
+                        
+                        // クライアントが初期化されたか
+                        if (tokenClient || (settings && !settings.clientId)) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                        
+                        attempts++;
+                        if (attempts > 100) { // 10秒待機
+                            clearInterval(interval);
+                            reject(new Error("Google APIのロードがタイムアウトしました。"));
+                        }
+                    }, 100);
+                });
+
+                // ★ v48: 読み込みロジックを修正
+                if (settings.dataSource === 'manual') {
+                    await loadAndDisplayData(settings); // ★ v41: 読み込んだ設定を渡す
                 } else {
-                    updateAuthStatus(false, "クライアントID未設定");
+                    // Google連携の場合は、まだデータをロードせず、サインインを待つ
+                    showError('「Google サインイン」ボタンを押して、スプレッドシートへのアクセスを許可してください。');
+                    // ローダーを隠す
+                    const loadingEl = document.getElementById('dashboard-loading');
+                    if (loadingEl) loadingEl.style.display = 'none';
                 }
                 
-                await loadAndDisplayData(settings); // ★ v41: 読み込んだ設定を渡す
             } catch(e) {
                 console.error("Failed during data loading sequence:", e);
                 showError(e.message || "データの読み込み中に不明なエラーが発生しました。");
