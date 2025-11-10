@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ワセダ_覇者への道のり (v44)</title>
+    <title>ワセダ_覇者への道のり (v45)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +17,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     
     <!-- ★ v44: Google API & Sign-In (GSI) -->
+    <!-- GSI (Sign-In) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- GAPI (Sheets API) - ★ v45: コールバックを script タグから削除 -->
     <script src="https://apis.google.com/js/api.js" async defer></script>
     
     <script>
@@ -110,7 +112,7 @@
     
     <div class="min-h-screen flex flex-col md:flex-row">
 
-        <!-- サイド ナビゲーションバー (★ v44: サインインボタン追加) -->
+        <!-- サイド ナビゲーションバー (v44と同じ) -->
         <nav class="bg-white shadow-lg md:w-64 flex-shrink-0 flex flex-col">
             <!-- ヘッダー -->
             <div class="flex justify-between items-center p-4 md:pt-8 md:px-6">
@@ -158,11 +160,11 @@
         <!-- メインコンテンツ -->
         <main class="flex-grow p-6 md:p-10 overflow-auto">
             
-            <!-- 1. ダッシュボード ページ (v33と同じ) -->
+            <!-- 1. ダッシュボード ページ (v44と同じ) -->
             <div id="page-dashboard" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">ダッシュボード</h2>
 
-                <!-- 使い方マニュアル (v33と同じ) -->
+                <!-- 使い方マニュアル (v44と同じ) -->
                 <details class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-4 border-red-800">
                     <summary class="text-xl font-semibold text-gray-800">はじめに (使い方マニュアル)</summary>
                     <div class="mt-4 pt-4 border-t border-gray-200 text-gray-700 space-y-3 text-sm">
@@ -204,7 +206,7 @@
                     <p class="mt-4 text-gray-600">データを読み込み中...</p>
                 </div>
 
-                <!-- (v42と同じ) -->
+                <!-- (v44と同じ) -->
                 <div id="dashboard-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
                     <strong class="font-bold">データ取得エラー</strong>
                     <span class="block sm:inline" id="dashboard-error-message"></span>
@@ -215,7 +217,7 @@
                 </div>
 
 
-                <!-- 上段3つ (v33と同じ) -->
+                <!-- 上段3つ (v44と同じ) -->
                 <div id="dashboard-summary-top" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <!-- 走行距離カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
@@ -245,7 +247,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- 下段2つ (v33と同じ) -->
+                <!-- 下段2つ (v44と同じ) -->
                 <div id="dashboard-summary-bottom" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                      <!-- 起床時脈拍カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
@@ -269,7 +271,7 @@
                 
             </div>
 
-            <!-- 2. コンディション記録 ページ (v33と同じ) -->
+            <!-- 2. コンディション記録 ページ (v44と同じ) -->
             <div id="page-condition" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">コンディション記録</h2>
                 
@@ -294,7 +296,7 @@
                     </label>
                 </div>
                 
-                <!-- 週平均表示エリア (v33と同じ) -->
+                <!-- 週平均表示エリア (v44と同じ) -->
                 <div id="chart-averages" class="bg-white p-4 rounded-2xl shadow-lg mb-6">
                     <h4 class="text-lg font-semibold text-gray-700 mb-2">直近7日間平均</h4>
                     <div id="chart-averages-content" class="flex flex-wrap gap-x-6 gap-y-2 text-gray-600">
@@ -310,12 +312,12 @@
                 </div>
             </div>
 
-            <!-- 3. テーパリング計画 ページ (v33と同じ) -->
+            <!-- 3. テーパリング計画 ページ (v44と同じ) -->
             <div id="page-tapering" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">テーパリング計画</h2>
                 <div class="bg-white p-6 rounded-2xl shadow-lg">
                     
-                    <!-- テーパリングの原則 (v33と同じ) -->
+                    <!-- テーパリングの原則 (v44と同じ) -->
                     <div class="mb-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
                         <h3 class="text-lg font-semibold text-yellow-800 mb-3">テーパリングの原則</h3>
                         <div class="space-y-2 text-gray-700">
@@ -335,27 +337,27 @@
                         </div>
                     </div>
                     
-                    <!-- 「保存された計画」セクション (v33と同じ) -->
+                    <!-- 「保存された計画」セクション (v44と同じ) -->
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">保存された計画</h3>
                     <div id="saved-plans-list" class="space-y-3 mb-6">
                         <!-- JSによって計画がここに追加されます -->
                         <p class="text-gray-500 text-sm">保存された計画はまだありません。</p>
                     </div>
 
-                    <!-- 新規計画ボタン (v33と同じ) -->
+                    <!-- 新規計画ボタン (v44と同じ) -->
                     <div class="mb-6">
                          <button id="new-plan-button" class="bg-red-800 hover:bg-red-900 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 w-full md:w-auto">
                             新規テーパリング計画を作成
                         </button>
                     </div>
 
-                    <!-- 新規/編集フォーム (v33と同じ) -->
+                    <!-- 新規/編集フォーム (v44と同じ) -->
                     <div id="plan-form-container" class="hidden mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
                         <h3 id="plan-form-title" class="text-xl font-semibold text-gray-800 mb-6">新規計画</h3>
                         
                         <input type="hidden" id="plan-edit-id" value="">
                         
-                        <!-- (v33と同じ) -->
+                        <!-- (v44と同じ) -->
                         <div id="plan-form-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert"></div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -391,7 +393,7 @@
                             </div>
                         </div>
                         
-                        <!-- ボタン (v33と同じ) -->
+                        <!-- ボタン (v44と同じ) -->
                         <div class="mt-8 flex space-x-4">
                             <button id="save-plan-button" class="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300">
                                 計画を保存
@@ -402,7 +404,7 @@
                         </div>
                     </div>
 
-                    <!-- 計画表示エリア (v33と同じ) -->
+                    <!-- 計画表示エリア (v44と同じ) -->
                     <div id="plan-output-container">
                         <!-- JSによって計算結果がここに追加されます -->
                     </div>
@@ -410,7 +412,7 @@
                 </div>
             </div>
 
-            <!-- 4. 設定 ページ (★ v44: Google連携UIに変更) -->
+            <!-- 4. 設定 ページ (★ v44: Google連携UI) -->
             <div id="page-settings" class="page-content">
                 <h2 class="text-3xl font-semibold mb-6">設定</h2>
                 
@@ -467,7 +469,7 @@
                     </div>
                 </div>
 
-                <!-- 4. 列マッピング (v33と同じ) -->
+                <!-- 4. 列マッピング (v44と同じ) -->
                 <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
                     <h3 class="text-xl font-semibold mb-4">4. 列設定 (Google連携のみ)</h3>
                     <p class="text-gray-700 mb-6 text-sm">
@@ -722,24 +724,32 @@
         // ★ v44: Google API / GSI 認証
         // ----------------------------------------
         
-        function gapiLoadedCallback() {
+        // ★ v45: グローバルコールバックを window オブジェクトにアタッチ
+        window.gapiLoadedCallback = () => {
             console.log("GAPI client loaded.");
             gapiReady = true;
             tryInitClient();
-        }
+        };
         
-        function gisLoadedCallback() {
+        window.gisLoadedCallback = () => {
             console.log("GIS client loaded.");
             gisReady = true;
             tryInitClient();
-        }
+        };
 
         async function tryInitClient() {
+            // ★ v45: gapi, google がロードされるまで待機
+            if (typeof gapi === 'undefined' || typeof google === 'undefined') {
+                console.log("GAPI or GIS not fully loaded yet, retrying...");
+                setTimeout(tryInitClient, 100);
+                return;
+            }
+            
             if (gapiReady && gisReady) {
-                console.log("Both GAPI and GIS loaded. Initializing clients...");
+                console.log("Both GAPI and GIS ready. Initializing clients...");
                 try {
                     // 1. GAPI (Sheets API)
-                    // APIキーは不要。OAuthトークンで gapi.client を直接使う
+                    await gapi.load('client');
                     await gapi.client.load('https://sheets.googleapis.com/$discovery/rest?version=v4');
                     console.log("GAPI Sheets API client initialized.");
 
@@ -757,7 +767,7 @@
                     }
                 } catch (e) {
                     console.error("Error initializing GAPI/GIS clients:", e);
-                    showError("Google APIの初期化に失敗: " + e.message);
+                    showError("Google APIの初期化に失敗: " + (e.message || ""));
                 }
             }
         }
@@ -779,7 +789,7 @@
                     console.log("Token revoked.");
                 });
                 googleTokenResponse = null;
-                gapi.client.setToken(null);
+                if (gapi.client) gapi.client.setToken(null);
                 updateAuthStatus(false, "サインアウトしました");
             } else {
                 // サインイン
@@ -795,7 +805,7 @@
                 return;
             }
             googleTokenResponse = response;
-            gapi.client.setToken(response);
+            if (gapi.client) gapi.client.setToken(response);
             console.log("Google Sign-In successful.");
             updateAuthStatus(true, "サインイン済み");
             
@@ -1328,10 +1338,10 @@
 
 
         // ----------------------------------------
-        // Chart.js (v33と同じ)
+        // Chart.js (★ v45: グラフ破棄処理を修正)
         // ----------------------------------------
         function initializeChart() {
-            // ★ v38: 既存チャートの破棄
+            // ★ v45: 既存チャートの破棄
             if (conditionChart) {
                 console.warn("Destroying existing chart instance before recreation.");
                 conditionChart.destroy();
@@ -1971,16 +1981,11 @@
         }
 
         // ----------------------------------------
-        // ★ v44: 初期化処理 (GAPI/GSI)
+        // ★ v40: 初期化処理 (v35のロジック)
         // ----------------------------------------
-        
-        // ★ v44: GAPI/GSI のコールバックをグローバルに公開
-        window.gapiLoadedCallback = gapiLoadedCallback;
-        window.gisLoadedCallback = gisLoadedCallback;
-        
         document.addEventListener('DOMContentLoaded', async () => {
             
-            // ★ v35: DOM 要素をすべて取得
+            // DOM 要素をすべて取得
             navLinks = document.querySelectorAll('.nav-link');
             pages = document.querySelectorAll('.page-content');
             mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -2023,68 +2028,72 @@
             planFinalLoad = document.getElementById('plan-final-load');
             planEditId = document.getElementById('plan-edit-id');
 
-            // ★ v35: イベントリスナーをすべて登録
-            
-            // ページ切り替え
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const pageId = link.dataset.page;
-                    showPage(pageId);
-                    const navContent = document.getElementById('nav-content');
-                    if (window.innerWidth < 768) {
-                        if (navContent) navContent.classList.add('hidden');
-                    }
+            // イベントリスナーをすべて登録
+            try {
+                // ページ切り替え
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const pageId = link.dataset.page;
+                        showPage(pageId);
+                        const navContent = document.getElementById('nav-content');
+                        if (window.innerWidth < 768) {
+                            if (navContent) navContent.classList.add('hidden');
+                        }
+                    });
                 });
-            });
-            
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', () => {
-                    const navContent = document.getElementById('nav-content');
-                    if (navContent) navContent.classList.toggle('hidden');
+                
+                if (mobileMenuButton) {
+                    mobileMenuButton.addEventListener('click', () => {
+                        const navContent = document.getElementById('nav-content');
+                        if (navContent) navContent.classList.toggle('hidden');
+                    });
+                }
+
+                // 設定ページ
+                if (dataSourceGoogle) {
+                    dataSourceGoogle.addEventListener('change', () => toggleDataSourceView('google'));
+                }
+                if (dataSourceManual) {
+                    dataSourceManual.addEventListener('change', () => toggleDataSourceView('manual'));
+                }
+                if (saveButton) {
+                    saveButton.addEventListener('click', saveSettings);
+                }
+                if (googleAuthButton) {
+                    googleAuthButton.addEventListener('click', handleAuthClick);
+                }
+
+                // テーパリングページ
+                if (newPlanButton) {
+                    newPlanButton.addEventListener('click', showNewPlanForm);
+                }
+                if (savePlanButton) { 
+                    savePlanButton.addEventListener('click', saveTaperPlan);
+                }
+                if (cancelPlanButton) { 
+                    cancelPlanButton.addEventListener('click', cancelPlanForm);
+                }
+                if (planRaceDate) {
+                    planRaceDate.addEventListener('change', handleFormChange);
+                }
+                if (planDuration) {
+                    planDuration.addEventListener('change', handleFormChange);
+                }
+
+                // グラフ
+                const chartToggles = document.querySelectorAll('.chart-toggle');
+                chartToggles.forEach(toggle => {
+                    toggle.addEventListener('change', () => {
+                        updateConditionChart(appData); 
+                    });
                 });
+            } catch (e) {
+                console.error("Error setting up event listeners:", e);
+                showError("UIの初期化に失敗しました。");
             }
-
-            // 設定ページ
-            if (dataSourceGoogle) {
-                dataSourceGoogle.addEventListener('change', () => toggleDataSourceView('google'));
-            }
-            if (dataSourceManual) {
-                dataSourceManual.addEventListener('change', () => toggleDataSourceView('manual'));
-            }
-            if (saveButton) {
-                saveButton.addEventListener('click', saveSettings);
-            }
-            if (googleAuthButton) {
-                googleAuthButton.addEventListener('click', handleAuthClick);
-            }
-
-            // テーパリングページ
-            if (newPlanButton) {
-                newPlanButton.addEventListener('click', showNewPlanForm);
-            }
-            if (savePlanButton) { 
-                savePlanButton.addEventListener('click', saveTaperPlan);
-            }
-            if (cancelPlanButton) { 
-                cancelPlanButton.addEventListener('click', cancelPlanForm);
-            }
-            if (planRaceDate) {
-                planRaceDate.addEventListener('change', handleFormChange);
-            }
-            if (planDuration) {
-                planDuration.addEventListener('change', handleFormChange);
-            }
-
-            // グラフ
-            const chartToggles = document.querySelectorAll('.chart-toggle');
-            chartToggles.forEach(toggle => {
-                toggle.addEventListener('change', () => {
-                    updateConditionChart(appData); 
-                });
-            });
             
-            // ★ v44: Firebaseではなく、localStorageから設定・データを読み込む
+            // ★ v44: localStorageから設定・データを読み込む
             showPage(defaultPage); 
             initializeChart();
             
