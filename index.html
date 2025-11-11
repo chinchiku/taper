@@ -452,7 +452,8 @@
                                     <span id="plan-avg-distance" class="font-bold text-red-800">--</span>
                                     <span class="text-sm text-gray-600"> km/日</span>
                                 </p>
-                                <p class="text-xs text-gray-500">（レース日・期間から自動計算。10km未満除外）</p>
+                                <!-- ★ v63: 平均の計算方法を変更 (0kmのみ除外) -->
+                                <p class="text-xs text-gray-500">（レース日・期間から自動計算。0km除外）</p>
                             </div>
                             <div></div> <!-- 空のセル -->
                             <!-- テーパリング期間 -->
@@ -1264,7 +1265,7 @@
         // データ取得・解析処理
         // ----------------------------------------
         
-        // ★ v62: 2行1組の結合セルに対応
+        // ★ v63: v61 のロジック (i++) に戻す
         // Google Sheets API (gapi) からの応答をパース
         function parseGapiResponse(valueRanges, mapping) {
             if (!mapping || !mapping.date) {
@@ -1285,16 +1286,16 @@
             for (const sheetData of valueRanges) {
                 const lines = sheetData.values || [];
                 
-                // ★ v62: 2行1組で処理するため、インデックスを使ったループに変更
-                for (let i = 0; i < lines.length; i += 2) { 
-                    const columns = lines[i]; // 2行のうちの1行目 (結合セルの値が入っている行)
+                // ★ v63: 1行ずつチェックする (i++)
+                for (let i = 0; i < lines.length; i++) { 
+                    const columns = lines[i];
                     
-                    if (!columns) continue; // lines[i] が存在しない場合 (例: 奇数行)
+                    if (!columns) continue;
 
-                    // 1行目の日付列を取得
                     const dateVal = columns[indices.date];
 
-                    // 1行目に日付があり、正規表現に一致する場合のみ処理
+                    // 日付があり、正規表現に一致する場合のみ処理
+                    // (これにより、結合セルの2行目(日付=null)は自動的にスキップされる)
                     if (dateVal && dateRegex.test(dateVal)) {
                         const cleanValue = (val) => {
                             if (val === undefined || val === null) return null;
@@ -1307,17 +1308,18 @@
                         
                         data.push({
                             date: cleanDate, // 'MM/DD' または 'YYYY/MM/DD'
-                            distance: cleanValue(columns[indices.distance]), // 1行目の距離
-                            morningWeight: cleanValue(columns[indices.morningWeight]), // 1行目の朝体重
-                            eveningWeight: cleanValue(columns[indices.eveningWeight]), // 1行目の夕体重
-                            wakingHr: cleanValue(columns[indices.wakingHr]), // 1行目の起床時脈拍
-                            practiceHr: cleanValue(columns[indices.practiceHr]), // 1行目の本練脈拍
-                            sleep: cleanValue(columns[indices.sleep]), // 1行目の睡眠時間
+                            distance: cleanValue(columns[indices.distance]),
+                            morningWeight: cleanValue(columns[indices.morningWeight]),
+                            eveningWeight: cleanValue(columns[indices.eveningWeight]),
+                            wakingHr: cleanValue(columns[indices.wakingHr]),
+                            practiceHr: cleanValue(columns[indices.practiceHr]),
+                            sleep: cleanValue(columns[indices.sleep]),
                         });
                     }
-                    // i += 2 により、次の行 (lines[i+1]) は自動的にスキップされる
+                    // スキップされた行 (i+1) は次のループでチェックされる (日付がなければ同様にスキップ)
                 }
             }
+            console.log(`Parsed ${data.length} rows from Google Sheets.`); // デバッグ用ログ
             return data;
         }
 
@@ -1382,8 +1384,6 @@
                 if (!settings) {
                     showError('「設定」ページで、入力方法と列設定を保存してください。');
                     baseData = [];
-                // ★ v61: エラー修正。 if (!settings) の場合に settings.dataSource を読みに行かないよう、
-                //           else if / else で残りのロジックをラップする
                 } else if (settings.dataSource === 'manual') {
                     // --- 手動データの場合 ---
                     console.log("Loading data from: Manual Input");
@@ -1391,7 +1391,6 @@
                     if (!manualData) {
                         showError('「設定」ページで、手動入力データを貼り付けて保存してください。');
                         baseData = []; // baseData をリセット
-                        // 手動データが空でもマージ処理は実行（クイックログデータを表示するため）
                     } else {
                         baseData = parseManualData(manualData, settings.mapping); // baseData をセット
                     }
@@ -1410,14 +1409,12 @@
                         return; // 設定不備
                     }
                     
-                    // GAPIが準備OKか最終確認
                     if (!gapiReady || !gapiSheetsReady || !gapi.client || !gapi.client.sheets) {
                         showError('Google Sheets API がまだ準備中です。数秒待ってから再試行してください。');
                         baseData = []; // baseData をリセット
                         return; // GAPI不備
                     }
 
-                    // 全シートのA-Z列（最大）のデータを要求
                     const ranges = settings.sheetNames.map(name => `'${name}'!A:Z`);
                     
                     const gapiCall = gapi.client.sheets.spreadsheets.values.batchGet({
@@ -1438,9 +1435,7 @@
 
             } catch (error) {
                 console.error("Failed to load and display data:", error);
-                // エラーオブジェクト全体を渡す
                 showError(error); 
-                // loadAndDisplayData が失敗したことを呼び出し元に伝える
                 throw error;
             }
         }
@@ -1461,14 +1456,12 @@
             }
 
             // 2. クイックログ (quickLogs) で上書き (マージ)
-            //    quickLogs は既に { 'MM/DD': { ... } } 形式
             for (const dateKey in quickLogs) {
                 const logEntry = quickLogs[dateKey];
                 const baseEntry = baseDataMap.get(dateKey) || { date: dateKey };
 
-                // クイックログのデータで上書き (null でない場合のみ)
                 const mergedEntry = {
-                    date: baseEntry.date || logEntry.date, // 元の日付形式 (MM/DD or YYYY/MM/DD) を維持
+                    date: baseEntry.date || logEntry.date, 
                     distance: (logEntry.distance !== null) ? logEntry.distance : baseEntry.distance,
                     morningWeight: (logEntry.morningWeight !== null) ? logEntry.morningWeight : baseEntry.morningWeight,
                     eveningWeight: (logEntry.eveningWeight !== null) ? logEntry.eveningWeight : baseEntry.eveningWeight,
@@ -1494,11 +1487,9 @@
 
             // 4. UI更新
             if (appData.length === 0) {
-                 // baseData も quickLogs も空の場合
                  if (baseData.length === 0 && Object.keys(quickLogs).length === 0) {
                     showError('データを読み込めませんでした。設定ページを確認するか、ダッシュボードから手動でデータを入力してください。');
                  } else {
-                    // baseData にはデータがあったが、パース等に失敗した場合
                     showError('データはありますが、有効な日付形式の行が見つかりませんでした。列設定や日付形式（MM/DD）を確認してください。');
                  }
                  return;
@@ -1531,14 +1522,12 @@
             if (summaryBottomEl) summaryBottomEl.style.display = 'none'; 
             if (errorEl) errorEl.style.display = 'block';
             
-            // エラーオブジェクトを解析
             let message = "不明なエラーが発生しました。";
             if (typeof error === 'string') {
                 message = error;
             } else if (error.message) {
                 message = error.message;
             }
-            // GAPI/GSI 特有のエラー
             if (error.result && error.result.error) {
                 message = `Google API エラー: ${error.result.error.message} (オリジンの設定を確認してください)`;
             }
@@ -1594,6 +1583,7 @@
             return result;
         }
         
+        // ★ v63: 平均計算ロジックを「> 0km」に変更
         function calculateWeeklyAverage(data, key) {
             if (!data || data.length === 0) {
                 return null;
@@ -1620,7 +1610,8 @@
                 if (value !== null && value !== undefined && !isNaN(parseFloat(value))) {
                     const numValue = parseFloat(value);
                     if (key === 'distance') {
-                        if (numValue >= 10) { 
+                        // ★ v63: 10km以上 -> 0kmより大きい (休養日以外) に変更
+                        if (numValue > 0) { 
                             includedDays++;
                             return sum + numValue;
                         }
@@ -1957,6 +1948,7 @@
             return `${month}/${day} (${weekday})`;
         }
 
+        // ★ v63: 平均計算ロジックを「> 0km」に変更
         // 「日平均」走行距離の計算ロジック (「今日」基準)
         function calculateAverageDistance() {
             if (!appData || appData.length === 0) {
@@ -1986,19 +1978,20 @@
             
             let includedDays = 0;
             const totalDistance = recentData.reduce((sum, day) => {
-                const dist = day.distance || 0;
-                if (dist >= 10) { 
+                const dist = day.distance; // appData はマージ・パース済み
+                // ★ v63: 10km以上 -> 0kmより大きい (休養日以外) に変更
+                if (dist !== null && dist !== undefined && dist > 0) { 
                     includedDays++;
                     return sum + dist;
                 }
                 return sum;
             }, 0);
             
-            console.log(`[calcAvg] Total distance (>=10km): ${totalDistance} km from ${includedDays} days.`);
+            console.log(`[calcAvg] Total distance (>0km): ${totalDistance} km from ${includedDays} days.`);
             
             let dailyAvg = 0;
             if (includedDays > 0) {
-                dailyAvg = totalDistance / includedDays; // 21 ではなく includedDays で割る
+                dailyAvg = totalDistance / includedDays;
             }
             
             console.log(`[calcAvg] Daily Avg (Total / includedDays): ${dailyAvg.toFixed(1)} km/day`);
@@ -2006,6 +1999,7 @@
             return dailyAvg.toFixed(1);
         }
         
+        // ★ v63: 平均計算ロジックを「> 0km」に変更
         // レース日と期間を基準に平均を計算する (フォーム変更時)
         function calculateAverageDistanceOnFormChange(raceDateStr, durationStr) {
             if (!appData || appData.length === 0) {
@@ -2045,23 +2039,24 @@
 
             console.log(`[calcAvgForm] Found ${recentData.length} entries in the period.`);
             
-            // 4. 外れ値(10km未満)を除外して合計距離を計算
+            // 4. 外れ値(0km)を除外して合計距離を計算
             let includedDays = 0;
             const totalDistance = recentData.reduce((sum, day) => {
-                const dist = day.distance || 0;
-                if (dist >= 10) { // 外れ値除外ルール
+                const dist = day.distance; // appData はマージ・パース済み
+                // ★ v63: 10km以上 -> 0kmより大きい (休養日以外) に変更
+                if (dist !== null && dist !== undefined && dist > 0) { 
                     includedDays++;
                     return sum + dist;
                 }
                 return sum;
             }, 0);
             
-            console.log(`[calcAvgForm] Total distance (>=10km): ${totalDistance} km from ${includedDays} days.`);
+            console.log(`[calcAvgForm] Total distance (>0km): ${totalDistance} km from ${includedDays} days.`);
             
             // 5. 日平均を計算 (「外れ値を除外した日数」で割る)
             let dailyAvg = 0;
             if (includedDays > 0) {
-                dailyAvg = totalDistance / includedDays; // 21 ではなく includedDays で割る
+                dailyAvg = totalDistance / includedDays;
             }
             
             console.log(`[calcAvgForm] Daily Avg (Total / includedDays): ${dailyAvg.toFixed(1)} km/day`);
