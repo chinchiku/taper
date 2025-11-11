@@ -47,8 +47,7 @@
             -moz-osx-font-smoothing: grayscale;
         }
         .page-content { display: none; }
-        /* ★ デフォルト表示を manual に変更 */
-        #page-manual { display: block; } 
+        #page-dashboard { display: block; }
         
         h1, h2, h3, h4, h5, h6 {
             @apply font-klee;
@@ -123,16 +122,10 @@
             
             <!-- ナビゲーション (PC用 / モバイル用メニュー) -->
             <div id="nav-content" class="hidden md:flex md:flex-col md:flex-grow md:mt-8">
-                <!-- ★ ナビゲーション順序変更、マニュアル追加 -->
                 <ul class="space-y-2 px-4">
                     <li>
                         <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-800" data-page="page-settings">
                             <span class="mr-3">⚙️</span> 設定
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-800" data-page="page-manual">
-                            <span class="mr-3">📖</span> マニュアル (必読)
                         </a>
                     </li>
                     <li>
@@ -165,12 +158,13 @@
         <!-- メインコンテンツ -->
         <main class="flex-grow p-6 md:p-10 overflow-auto">
             
-            <!-- ★ マニュアルページ (新規追加) -->
-            <div id="page-manual" class="page-content">
-                <h2 class="text-3xl font-semibold mb-6">使い方・設定マニュアル</h2>
-                
+            <!-- 1. ダッシュボード ページ -->
+            <div id="page-dashboard" class="page-content">
+                <h2 class="text-3xl font-semibold mb-6">ダッシュボード</h2>
+
+                <!-- 使い方マニュアル -->
                 <details class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-4 border-red-800" open>
-                    <summary class="text-xl font-semibold text-gray-800">はじめに (アプリの使い方)</summary>
+                    <summary class="text-xl font-semibold text-gray-800">はじめに (使い方・設定マニュアル)</summary>
                     <div class="mt-4 pt-4 border-t border-gray-200 text-gray-700 space-y-4 text-sm">
                         
                         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -179,14 +173,14 @@
                             <div class="space-y-2 text-sm">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600">チーム共用 Googleアカウント:</label>
-                                    <!-- ★ チーム共有のアカウント名を記載 -->
-                                    <code class="text-sm font-semibold text-red-700">w.tyokyori1914@gmail.com</code>
+                                    <!-- ★★★ ここにチーム共有のアカウント名を記載 ★★★ -->
+                                    <code class="text-sm font-semibold text-red-700">team-shared-account@gmail.com</code>
                                     <p class="text-xs text-gray-500">（[設定]入力後、左下の「Google サインイン」ボタンを押す際、このアカウントでログインしてください）</p>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600">チーム共用 クライアントID:</label>
-                                    <!-- ★ チーム共有のクライアントIDを記載 -->
-                                    <code class="block text-xs font-semibold text-red-700 bg-gray-100 p-2 rounded break-all">27661887787-0f4vc069dead946bkhnkumuncnb0t2s4.apps.googleusercontent.com</code>
+                                    <!-- ★★★ ここにチーム共有のクライアントIDを記載 ★★★ -->
+                                    <code class="block text-xs font-semibold text-red-700 bg-gray-100 p-2 rounded break-all">1234567890-THIS-IS-A-DUMMY-ID.apps.googleusercontent.com</code>
                                     <p class="text-xs text-gray-500">（この文字列全体をコピーして、[設定]ページの「クライアントID」欄に貼り付けてください）</p>
                                 </div>
                             </div>
@@ -202,7 +196,7 @@
                                         <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
                                             <li><strong class="font-semibold">クライアント ID:</strong> 上記の「チーム共用 クライアントID」をコピーして貼り付けます。</li>
                                             <li><strong class="font-semibold">スプレッドシート URL または ID:</strong> <strong class="text-red-800">あなた個人の</strong>練習日誌スプレッドシートのURL（またはID）を入力します。</li>
-                                            <li><strong class="font-semibold">シート名 (タブ名):</strong> 読み込みたいシート名（例: `2025年11月w45-48`）を1行に1つずつ入力します。</li>
+                                            <li><strong class="font-semibold">シート名 (タブ名):</strong> 読み込みたいシート名（例: `11月`, `12月`）を1行に1つずつ入力します。</li>
                                         </ul>
                                     </li>
                                     <li>「4. 列設定」で、あなたのスプレッドシートの列構成に合わせてアルファベット（例: 日付がC列なら `C`）を入力します。（チームで形式が統一されていれば、記載済みのものがそのまま使えます）</li>
@@ -240,12 +234,6 @@
                         </ol>
                     </div>
                 </details>
-            </div>
-
-            <!-- 1. ダッシュボード ページ -->
-            <!-- ★ マニュアルを削除 -->
-            <div id="page-dashboard" class="page-content">
-                <h2 class="text-3xl font-semibold mb-6">ダッシュボード</h2>
                 
                 <!-- クイックログ入力フォーム -->
                 <details class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-4 border-blue-600">
@@ -289,6 +277,7 @@
                         </div>
                     </div>
                 </details>
+
                 
                 <div id="dashboard-loading" class="flex flex-col items-center justify-center h-64">
                     <div class="loader"></div>
@@ -304,7 +293,7 @@
                     <span class="block sm:inline" id="dashboard-warning-message"></span>
                 </div>
 
-                <!-- 上段3つ -->
+
                 <div id="dashboard-summary-top" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <!-- 走行距離カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
@@ -334,7 +323,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- 下段2つ -->
                 <div id="dashboard-summary-bottom" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                      <!-- 起床時脈拍カード -->
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
@@ -537,8 +525,7 @@
                         </div>
                         <div>
                             <label for="google-sheet-names" class="form-label font-bold">シート名 (タブ名) (1行に1つ)</label>
-                            <!-- ★ シート名の例文を変更 -->
-                            <textarea id="google-sheet-names" class="form-input font-mono" rows="5" placeholder="2025年11月w45-48&#10;2025年12月w49-52&#10;2026年1月w1-4"></textarea>
+                            <textarea id="google-sheet-names" class="form-input font-mono" rows="5" placeholder="11月&#10;12月&#10;1月"></textarea>
                         </div>
                     </div>
                 </div>
@@ -636,11 +623,11 @@
         let gisReady = false;
         let gapiSheetsReady = false; // Sheets API 自体のロード完了
         
-        // 保存キー (localStorage) - 互換性のため v44/v60 を維持
-        const SETTINGS_STORAGE_KEY = 'practiceLogSettings_v44';
-        const MANUAL_DATA_STORAGE_KEY = 'practiceLogManualData_v44';
-        const TAPER_PLANS_STORAGE_KEY = 'taperPlansV1_v44';
-        const QUICK_LOGS_STORAGE_KEY = 'practiceLogQuickLogs_v60';
+        // 保存キー
+        const SETTINGS_STORAGE_KEY = 'practiceLogSettings';
+        const MANUAL_DATA_STORAGE_KEY = 'practiceLogManualData';
+        const TAPER_PLANS_STORAGE_KEY = 'taperPlansV1';
+        const QUICK_LOGS_STORAGE_KEY = 'practiceLogQuickLogs';
 
         // DOM要素の「宣言」をグローバルスコープに移動
         // ページ切り替え
@@ -845,8 +832,7 @@
         // ----------------------------------------
         // ページ切り替えロジック
         // ----------------------------------------
-        // ★ デフォルトページをマニュアルに変更
-        const defaultPage = 'page-manual'; 
+        const defaultPage = 'page-dashboard'; 
 
         function showPage(pageId) {
             if (!pages) pages = document.querySelectorAll('.page-content');
@@ -1278,6 +1264,7 @@
         // データ取得・解析処理
         // ----------------------------------------
         
+        // ★ v62: 2行1組の結合セルに対応
         // Google Sheets API (gapi) からの応答をパース
         function parseGapiResponse(valueRanges, mapping) {
             if (!mapping || !mapping.date) {
@@ -1298,9 +1285,16 @@
             for (const sheetData of valueRanges) {
                 const lines = sheetData.values || [];
                 
-                for (const columns of lines) { // GAPIは既に配列
+                // ★ v62: 2行1組で処理するため、インデックスを使ったループに変更
+                for (let i = 0; i < lines.length; i += 2) { 
+                    const columns = lines[i]; // 2行のうちの1行目 (結合セルの値が入っている行)
+                    
+                    if (!columns) continue; // lines[i] が存在しない場合 (例: 奇数行)
+
+                    // 1行目の日付列を取得
                     const dateVal = columns[indices.date];
 
+                    // 1行目に日付があり、正規表現に一致する場合のみ処理
                     if (dateVal && dateRegex.test(dateVal)) {
                         const cleanValue = (val) => {
                             if (val === undefined || val === null) return null;
@@ -1313,14 +1307,15 @@
                         
                         data.push({
                             date: cleanDate, // 'MM/DD' または 'YYYY/MM/DD'
-                            distance: cleanValue(columns[indices.distance]),
-                            morningWeight: cleanValue(columns[indices.morningWeight]),
-                            eveningWeight: cleanValue(columns[indices.eveningWeight]),
-                            wakingHr: cleanValue(columns[indices.wakingHr]),
-                            practiceHr: cleanValue(columns[indices.practiceHr]),
-                            sleep: cleanValue(columns[indices.sleep]),
+                            distance: cleanValue(columns[indices.distance]), // 1行目の距離
+                            morningWeight: cleanValue(columns[indices.morningWeight]), // 1行目の朝体重
+                            eveningWeight: cleanValue(columns[indices.eveningWeight]), // 1行目の夕体重
+                            wakingHr: cleanValue(columns[indices.wakingHr]), // 1行目の起床時脈拍
+                            practiceHr: cleanValue(columns[indices.practiceHr]), // 1行目の本練脈拍
+                            sleep: cleanValue(columns[indices.sleep]), // 1行目の睡眠時間
                         });
                     }
+                    // i += 2 により、次の行 (lines[i+1]) は自動的にスキップされる
                 }
             }
             return data;
@@ -1384,10 +1379,11 @@
             errorEl.style.display = 'none';
 
             try {
-                // ★ v61: エラー修正
                 if (!settings) {
                     showError('「設定」ページで、入力方法と列設定を保存してください。');
                     baseData = [];
+                // ★ v61: エラー修正。 if (!settings) の場合に settings.dataSource を読みに行かないよう、
+                //           else if / else で残りのロジックをラップする
                 } else if (settings.dataSource === 'manual') {
                     // --- 手動データの場合 ---
                     console.log("Loading data from: Manual Input");
@@ -1477,7 +1473,7 @@
                     morningWeight: (logEntry.morningWeight !== null) ? logEntry.morningWeight : baseEntry.morningWeight,
                     eveningWeight: (logEntry.eveningWeight !== null) ? logEntry.eveningWeight : baseEntry.eveningWeight,
                     wakingHr: (logEntry.wakingHr !== null) ? logEntry.wakingHr : baseEntry.wakingHr,
-                    practiceHr: baseEntry.practiceHr, // クイックログでは未対応
+                    practiceHr: (baseEntry.practiceHr !== null && baseEntry.practiceHr !== undefined) ? baseEntry.practiceHr : null, // baseEntry のみ
                     sleep: (logEntry.sleep !== null) ? logEntry.sleep : baseEntry.sleep,
                 };
                 baseDataMap.set(dateKey, mergedEntry);
