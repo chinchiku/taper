@@ -843,19 +843,25 @@
         function extractSpreadsheetId(input) {
             if (!input) return "";
             input = input.trim();
-            // URLからIDを抽出 (例: .../d/THIS_IS_THE_ID/edit...)
-            const urlMatch = input.match(/\/d\/([a-zA-Z0-9_-]{44})\//);
+            
+            // URLからIDを抽出 (例: .../d/THIS_IS_THE_ID/edit... or .../d/THIS_IS_THE_ID)
+            const urlMatch = input.match(/\/d\/([a-zA-Z0--9_-]{44})/);
             if (urlMatch && urlMatch[1]) {
                 console.log("Extracted ID from URL:", urlMatch[1]);
                 return urlMatch[1];
             }
+
             // IDがそのまま貼られたか (簡単なチェック)
             if (input.length === 44 && !input.includes('/') && !input.includes(':')) {
                 console.log("Input appears to be an ID:", input);
                 return input;
             }
-            // 抽出失敗 (または既にIDだった)
-            console.warn("Could not extract Spreadsheet ID. Using raw input.");
+
+            // 抽出失敗。ただし、ユーザーがIDだけを貼り付けた可能性を考慮し、
+            // 44文字より長く、スラッシュを含む場合は警告を出すが、それ以外はそのまま返す。
+            if (input.length > 44 && (input.includes('/') || input.includes(':'))) {
+                 console.warn("Could not extract a standard Spreadsheet ID from the provided URL. Using raw input.");
+            }
             return input; 
         }
 
@@ -1345,6 +1351,7 @@
         // データ取得・解析処理
         // ----------------------------------------
         
+        // 2行1組の結合セルに対応
         // Google Sheets API (gapi) からの応答をパース
         function parseGapiResponse(valueRanges, mapping) {
             if (!mapping || !mapping.date) {
@@ -1365,16 +1372,16 @@
             for (const sheetData of valueRanges) {
                 const lines = sheetData.values || [];
                 
-                // 各行を処理する
-                for (let i = 0; i < lines.length; i++) { 
-                    const columns = lines[i];
+                // 2行1組で処理するため、インデックスを使ったループに変更
+                for (let i = 0; i < lines.length; i += 2) { 
+                    const columns = lines[i]; // 2行のうちの1行目 (結合セルの値が入っている行)
                     
-                    if (!columns) continue;
+                    if (!columns) continue; // lines[i] が存在しない場合 (例: 奇数行)
 
-                    // 日付列を取得
+                    // 1行目の日付列を取得
                     const dateVal = columns[indices.date];
 
-                    // 日付があり、正規表現に一致する場合のみ処理
+                    // 1行目に日付があり、正規表現に一致する場合のみ処理
                     if (dateVal && dateRegex.test(dateVal)) {
                         const cleanValue = (val) => {
                             if (val === undefined || val === null) return null;
@@ -1387,14 +1394,15 @@
                         
                         data.push({
                             date: cleanDate, // 'MM/DD' または 'YYYY/MM/DD'
-                            distance: cleanValue(columns[indices.distance]),
-                            morningWeight: cleanValue(columns[indices.morningWeight]),
-                            eveningWeight: cleanValue(columns[indices.eveningWeight]),
-                            wakingHr: cleanValue(columns[indices.wakingHr]),
-                            practiceHr: cleanValue(columns[indices.practiceHr]),
-                            sleep: cleanValue(columns[indices.sleep]),
+                            distance: cleanValue(columns[indices.distance]), // 1行目の距離
+                            morningWeight: cleanValue(columns[indices.morningWeight]), // 1行目の朝体重
+                            eveningWeight: cleanValue(columns[indices.eveningWeight]), // 1行目の夕体重
+                            wakingHr: cleanValue(columns[indices.wakingHr]), // 1行目の起床時脈拍
+                            practiceHr: cleanValue(columns[indices.practiceHr]), // 1行目の本練脈拍
+                            sleep: cleanValue(columns[indices.sleep]), // 1行目の睡眠時間
                         });
                     }
+                    // i += 2 により、次の行 (lines[i+1]) は自動的にスキップされる
                 }
             }
             return data;
