@@ -762,7 +762,14 @@
                     const dateObj = new Date(targetYear, month - 1, day);
                     if (isNaN(dateObj.getTime())) return null;
                     
-                    if (dateObj > today) {
+                    // The original logic incorrectly adjusted near-future dates.
+                    // This new logic only adjusts if the calculated date is significantly
+                    // in the future, which typically happens with academic year rollovers
+                    // (e.g., entering "Jan" in "Dec").
+                    const diffTime = dateObj.getTime() - today.getTime();
+                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+                    if (diffDays > 60) { // If more than ~2 months in the future, assume it's for the previous year.
                         dateObj.setFullYear(dateObj.getFullYear() - 1);
                     }
                     
