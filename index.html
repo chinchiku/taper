@@ -985,8 +985,8 @@
                     if (googleAuthButton) googleAuthButton.disabled = false;
                     updateAuthStatus(false, "Google認証準備完了"); // 手動サインインを促す
                     
-                    // ★ v63: 自動サインイン失敗時は「サインインしてください」というエラーを出す
-                    showError('「Google サインイン」ボタンを押して、スプレッドシートへのアクセスを許可してください。');
+                    // 自動サインイン失敗は「エラー」ではなく、単に「手動サインインが必要」な状態なので、
+                    // ここでエラー表示はしない。UIは「サインイン」を待つ状態になる。
                     const loadingEl = document.getElementById('dashboard-loading');
                     if (loadingEl) loadingEl.style.display = 'none';
 
@@ -1322,7 +1322,6 @@
         // データ取得・解析処理
         // ----------------------------------------
         
-        // 2行1組の結合セルに対応
         // Google Sheets API (gapi) からの応答をパース
         function parseGapiResponse(valueRanges, mapping) {
             if (!mapping || !mapping.date) {
@@ -1343,16 +1342,16 @@
             for (const sheetData of valueRanges) {
                 const lines = sheetData.values || [];
                 
-                // 2行1組で処理するため、インデックスを使ったループに変更
-                for (let i = 0; i < lines.length; i += 2) { 
-                    const columns = lines[i]; // 2行のうちの1行目 (結合セルの値が入っている行)
+                // 各行を処理する
+                for (let i = 0; i < lines.length; i++) { 
+                    const columns = lines[i];
                     
-                    if (!columns) continue; // lines[i] が存在しない場合 (例: 奇数行)
+                    if (!columns) continue;
 
-                    // 1行目の日付列を取得
+                    // 日付列を取得
                     const dateVal = columns[indices.date];
 
-                    // 1行目に日付があり、正規表現に一致する場合のみ処理
+                    // 日付があり、正規表現に一致する場合のみ処理
                     if (dateVal && dateRegex.test(dateVal)) {
                         const cleanValue = (val) => {
                             if (val === undefined || val === null) return null;
@@ -1365,15 +1364,14 @@
                         
                         data.push({
                             date: cleanDate, // 'MM/DD' または 'YYYY/MM/DD'
-                            distance: cleanValue(columns[indices.distance]), // 1行目の距離
-                            morningWeight: cleanValue(columns[indices.morningWeight]), // 1行目の朝体重
-                            eveningWeight: cleanValue(columns[indices.eveningWeight]), // 1行目の夕体重
-                            wakingHr: cleanValue(columns[indices.wakingHr]), // 1行目の起床時脈拍
-                            practiceHr: cleanValue(columns[indices.practiceHr]), // 1行目の本練脈拍
-                            sleep: cleanValue(columns[indices.sleep]), // 1行目の睡眠時間
+                            distance: cleanValue(columns[indices.distance]),
+                            morningWeight: cleanValue(columns[indices.morningWeight]),
+                            eveningWeight: cleanValue(columns[indices.eveningWeight]),
+                            wakingHr: cleanValue(columns[indices.wakingHr]),
+                            practiceHr: cleanValue(columns[indices.practiceHr]),
+                            sleep: cleanValue(columns[indices.sleep]),
                         });
                     }
-                    // i += 2 により、次の行 (lines[i+1]) は自動的にスキップされる
                 }
             }
             return data;
