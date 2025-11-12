@@ -889,6 +889,41 @@
                 link.classList.toggle('font-semibold', isActive);
             });
         }
+
+        // --- START: Sidebar click fix ---
+        // Since the original initialization code seems to be missing from the file,
+        // this code is added to ensure the sidebar navigation works as expected.
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const navContent = document.getElementById('nav-content');
+
+            // Set up sidebar link clicks
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    showPage(pageId);
+                    // On mobile, hide the menu after a selection.
+                    if (mobileMenuButton.offsetParent !== null) { // Check if mobile menu button is visible
+                        navContent.classList.add('hidden');
+                        navContent.classList.remove('flex');
+                    }
+                });
+            });
+
+            // Set up mobile menu button toggle
+            if (mobileMenuButton && navContent) {
+                mobileMenuButton.addEventListener('click', () => {
+                    navContent.classList.toggle('hidden');
+                    navContent.classList.toggle('flex');
+                });
+            }
+            
+            // Show the default page on load
+            showPage(defaultPage);
+        });
+        // --- END: Sidebar click fix ---
         
         // ----------------------------------------
         // Google API / GSI 認証 (★ v63: 自動サインイン対応)
