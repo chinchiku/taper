@@ -173,14 +173,12 @@
                             <div class="space-y-2 text-sm">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600">チーム共用 Googleアカウント:</label>
-                                    <!-- ★★★ ここにチーム共有のアカウント名を記載 ★★★ -->
-                                    <code class="text-sm font-semibold text-red-700">team-shared-account@gmail.com</code>
+                                    <code class="text-sm font-semibold text-red-700">w.tyokyori1914@gmail.com</code>
                                     <p class="text-xs text-gray-500">（[設定]入力後、左下の「Google サインイン」ボタンを押す際、このアカウントでログインしてください）</p>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600">チーム共用 クライアントID:</label>
-                                    <!-- ★★★ ここにチーム共有のクライアントIDを記載 ★★★ -->
-                                    <code class="block text-xs font-semibold text-red-700 bg-gray-100 p-2 rounded break-all">1234567890-THIS-IS-A-DUMMY-ID.apps.googleusercontent.com</code>
+                                    <code class="block text-xs font-semibold text-red-700 bg-gray-100 p-2 rounded break-all">27661887787-0f4vc069dead946bkhnkumuncnb0t2s4.apps.googleusercontent.com</code>
                                     <p class="text-xs text-gray-500">（この文字列全体をコピーして、[設定]ページの「クライアントID」欄に貼り付けてください）</p>
                                 </div>
                             </div>
@@ -207,10 +205,10 @@
                             <li>
                                 <strong class="font-semibold text-gray-800">3. Google サインイン</strong>
                                 <ul class="list-disc list-inside ml-4 mt-2 space-y-2">
-                                    <li>設定保存後、アプリが自動でサインインを試みます。</li>
-                                    <li>リロード（再読み込み）しても、基本的には自動でサインイン状態が復元されます。</li>
-                                    <li>もし自動サインインに失敗した場合（初めての利用時など）は、左下の「Google サインイン」ボタンが押せるようになります。</li>
-                                    <li>ボタンを押し、ポップアップウィンドウで上記の「<strong class="text-red-800">チーム共用 Googleアカウント</strong>」を選択してログインしてください。</li>
+                                    <li>設定保存後、アプリをリロード（再読み込み）すると、自動でサインインが試行されます。</li>
+                                    <li>もし自動サインインに失敗した場合（初めての利用時など）は、左下の「Google サインイン」ボタンを押してください。</li>
+                                    <li>ポップアップウィンドウで上記の「<strong class="text-red-800">チーム共用 Googleアカウント</strong>」を選択してログインしてください。</li>
+                                    <li>「データ取得エラー」と表示された場合は、入力したスプレッドシートIDやシート名が間違っていないか確認してください。</li>
                                 </ul>
                             </li>
                             
@@ -224,12 +222,37 @@
                             </li>
 
                             <li>
-                                <strong class="font-semibold text-gray-800">（参考）個人アカウントでGoogle連携を行いたい場合</strong>
-                                <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
-                                    <li>技術的な設定に詳しい方は、ご自身の個人アカウントで専用のクライアントIDを取得することも可能です。</li>
-                                    <li>その場合、ご自身で「<strong class="font-semibold">Google Cloud Console</strong>」プロジェクトを作成し、「<strong class="font-semibold">Google Sheets API</strong>」を有効化してください。</li>
-                                    <li>「<strong class="font-semibold">OAuth 2.0 クライアント ID</strong>」を作成し、「ウェブ アプリケーション」タイプを選択します。</li>
-                                    <li>「<strong class="font-semibold">承認済みの JavaScript 生成元</strong>」と「<strong class="font-semibold">承認済みのリダイレクト URI</strong>」には、このアプリが動作しているURL（現在のブラウザのアドレスバーにあるURL）を正確に登録する必要があります。</li>
+                                <strong class="font-semibold text-gray-800">（参考）個人アカウントでGoogle連携を行いたい場合 (上級者向け)</strong>
+                                <p class="mt-1 mb-2">
+                                    技術的な設定に詳しい方は、チーム共用アカウントの代わりに、ご自身の個人Googleアカウントで連携することも可能です。その場合、ご自身でクライアントIDを取得する必要があります。詳細はご自身で検索していただく必要がありますが、以下のキーワードを参考にしてください。
+                                </p>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-3">
+                                    <li>
+                                        <strong>1. Google Cloud Consoleでプロジェクト作成:</strong>
+                                        <ul class="list-['-_'] list-inside ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                                            <li>「<strong class="font-semibold text-gray-800">Google Cloud Console</strong>」にアクセスし、新しいプロジェクトを作成します。</li>
+                                            <li>そのプロジェクトで「<strong class="font-semibold text-gray-800">Google Sheets API</strong>」を検索し、有効化します。</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>2. OAuth 2.0 クライアントIDの発行:</strong>
+                                        <ul class="list-['-_'] list-inside ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                                            <li>APIとサービス > 認証情報 > 「<strong class="font-semibold text-gray-800">+ 認証情報を作成</strong>」から「<strong class="font-semibold text-gray-800">OAuth 2.0 クライアント ID</strong>」を選択します。</li>
+                                            <li>アプリケーションの種類は「<strong class="font-semibold text-gray-800">ウェブ アプリケーション</strong>」を選択します。</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>3. URIの設定 (重要):</strong>
+                                        <ul class="list-['-_'] list-inside ml-4 mt-1 space-y-1 text-xs text-gray-600">
+                                            <li>このアプリをローカルサーバーで実行している場合、以下のように設定します。</li>
+                                            <li>「<strong class="font-semibold text-gray-800">承認済みの JavaScript 生成元</strong>」に <code class="bg-gray-200 px-1 rounded">http://localhost:8000</code> を追加します。</li>
+                                            <li>「<strong class="font-semibold text-gray-800">承認済みのリダイレクト URI</strong>」に <code class="bg-gray-200 px-1 rounded">http://localhost:8000</code> を追加します。</li>
+                                            <li>(もし別のURLでホストしている場合は、そのURLを登録してください)</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        発行されたクライアントIDをコピーし、このアプリの「設定」ページに貼り付けて使用します。
+                                    </li>
                                 </ul>
                             </li>
                         </ol>
@@ -603,7 +626,7 @@
         </main>
     </div>
     
-    <script type="module">
+    <script>
         // ----------------------------------------
         // グローバル変数
         // ----------------------------------------
@@ -691,35 +714,37 @@
         
         // 「ソート用」
         function parseDateToSort(dateStr) {
-            try {
-                let month, day;
-                let dateObj;
-                // YYYY-MM-DD 形式も mdMatch の前に処理
-                const ymdMatch = dateStr.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
-                const mdMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})$/);
+            try {
+                let month, day;
+                let dateObj;
+                // YYYY-MM-DD 形式も mdMatch の前に処理
+                const ymdMatch = dateStr.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+                const mdMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})$/);
+                const jpMatch = dateStr.match(/^(\d{1,2})月(\d{1,2})日?$/); // 日本語日付対応
 
-                if (ymdMatch) {
-                    const parsableDateStr = dateStr.replace(/-/g, '/') + "T00:00:00";
-                    dateObj = new Date(parsableDateStr); 
-                    if (isNaN(dateObj.getTime())) return null;
-                    month = dateObj.getMonth() + 1;
-                    day = dateObj.getDate();
-                } else if (mdMatch) {
-                    month = parseInt(mdMatch[1], 10);
-                    day = parseInt(mdMatch[2], 10);
-                    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
-                    const yearOffset = (month < 4) ? 1 : 0;
-                    return new Date(2000 + yearOffset, month - 1, day);
-                } else {
-                    return null;
-                }
-                const sortYear = (month < 4) ? 2001 : 2000;
-                return new Date(sortYear, month - 1, day);
-            } catch (error) {
-                console.error(`Failed to parse sort date string: ${dateStr}`, error);
-                return null;
-            }
-        }
+                if (ymdMatch) {
+                    const parsableDateStr = dateStr.replace(/-/g, '/') + "T00:00:00";
+                    dateObj = new Date(parsableDateStr); 
+                    if (isNaN(dateObj.getTime())) return null;
+                    month = dateObj.getMonth() + 1;
+                    day = dateObj.getDate();
+                } else if (mdMatch || jpMatch) { 
+                    const match = mdMatch || jpMatch; 
+                    month = parseInt(match[1], 10); 
+                    day = parseInt(match[2], 10); 
+                    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+                    const yearOffset = (month < 4) ? 1 : 0;
+                    return new Date(2000 + yearOffset, month - 1, day);
+                } else {
+                    return null;
+                }
+                const sortYear = (month < 4) ? 2001 : 2000;
+                return new Date(sortYear, month - 1, day);
+            } catch (error) {
+                console.error(`Failed to parse sort date string: ${dateStr}`, error);
+                return null;
+            }
+        }
         
         // 「実日付用」
         function parseDateToReal(dateStr) {
@@ -733,9 +758,12 @@
                 }
                 
                 const mdMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})$/);
-                if (mdMatch) {
-                    const month = parseInt(mdMatch[1], 10);
-                    const day = parseInt(mdMatch[2], 10);
+                const jpMatch = dateStr.match(/^(\d{1,2})月(\d{1,2})日?$/); // 日本語日付対応
+
+                if (mdMatch || jpMatch) { 
+                    const match = mdMatch || jpMatch; 
+                    const month = parseInt(match[1], 10); 
+                    const day = parseInt(match[2], 10); 
                     if (month < 1 || month > 12 || day < 1 || day > 31) return null;
 
                     const today = new Date();
@@ -762,7 +790,10 @@
                     const dateObj = new Date(targetYear, month - 1, day);
                     if (isNaN(dateObj.getTime())) return null;
                     
-                    if (dateObj > today) {
+                    const diffTime = dateObj.getTime() - today.getTime();
+                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+                    if (diffDays > 60) { // If more than ~2 months in the future, assume it's for the previous year.
                         dateObj.setFullYear(dateObj.getFullYear() - 1);
                     }
                     
@@ -813,19 +844,25 @@
         function extractSpreadsheetId(input) {
             if (!input) return "";
             input = input.trim();
-            // URLからIDを抽出 (例: .../d/THIS_IS_THE_ID/edit...)
-            const urlMatch = input.match(/\/d\/([a-zA-Z0-9_-]{44})\//);
+            
+            // URLからIDを抽出 (例: .../d/THIS_IS_THE_ID/edit... or .../d/THIS_IS_THE_ID)
+            const urlMatch = input.match(/\/d\/([a-zA-Z0-9_-]{44})/);
             if (urlMatch && urlMatch[1]) {
                 console.log("Extracted ID from URL:", urlMatch[1]);
                 return urlMatch[1];
             }
+
             // IDがそのまま貼られたか (簡単なチェック)
             if (input.length === 44 && !input.includes('/') && !input.includes(':')) {
                 console.log("Input appears to be an ID:", input);
                 return input;
             }
-            // 抽出失敗 (または既にIDだった)
-            console.warn("Could not extract Spreadsheet ID. Using raw input.");
+
+            // 抽出失敗。ただし、ユーザーがIDだけを貼り付けた可能性を考慮し、
+            // 44文字より長く、スラッシュを含む場合は警告を出すが、それ以外はそのまま返す。
+            if (input.length > 44 && (input.includes('/') || input.includes(':'))) {
+                 console.warn("Could not extract a standard Spreadsheet ID from the provided URL. Using raw input.");
+            }
             return input; 
         }
 
@@ -853,9 +890,10 @@
                 link.classList.toggle('font-semibold', isActive);
             });
         }
+
         
         // ----------------------------------------
-        // Google API / GSI 認証
+        // Google API / GSI 認証 (★ v63: 自動サインイン対応)
         // ----------------------------------------
         
         // GAPI/GIS の初期化 (ポーリングから呼ばれる)
@@ -907,14 +945,25 @@
                     });
                     console.log("GIS Token Client initialized.");
                     
-                    // GAPI (Sheets) も準備完了しているので、ボタンを有効化
-                    if (googleAuthButton) googleAuthButton.disabled = false;
-                    // ★ v63: この時点ではまだ「準備完了」
-                    updateAuthStatus(false, "Google認証準備完了");
+                    // ★ v63: 自動サインイン処理
+                    // 以前にスコープが許可されているか確認
+                    const hasGranted = google.accounts.oauth2.hasGrantedAllScopes(
+                        tokenClient,
+                        'https://www.googleapis.com/auth/spreadsheets.readonly'
+                    );
 
-                    // ★ v63: 自動サインインを試みる
-                    console.log("Attempting automatic sign-in...");
-                    tokenClient.requestAccessToken({ prompt: 'none' });
+                    if (hasGranted) {
+                        console.log("Previous grant found. Attempting silent sign-in...");
+                        updateAuthStatus(false, "自動サインイン試行中...");
+                        // ポップアップなしでトークンを要求
+                        tokenClient.requestAccessToken({ prompt: 'none' });
+                        // handleTokenResponse が自動的に呼ばれる
+                    } else {
+                        console.log("No previous grant found. Manual sign-in required.");
+                        // 手動サインインの準備完了
+                        if (googleAuthButton) googleAuthButton.disabled = false;
+                        updateAuthStatus(false, "Google認証準備完了");
+                    }
 
                 } catch (e) {
                     console.error("Error initializing GIS Token Client:", e);
@@ -944,30 +993,43 @@
                 if (gapi.client) gapi.client.setToken(null);
                 updateAuthStatus(false, "サインアウトしました");
             } else {
-                // サインイン (手動)
-                tokenClient.requestAccessToken({ prompt: '' }); // 'consent' ではなく空
+                // サインイン (ポップアップをトリガー)
+                tokenClient.requestAccessToken({ prompt: 'consent' });
             }
         }
 
+        // ★ v63: 自動サインイン失敗時のハンドリングを強化
         async function handleTokenResponse(response) {
             if (response.error) {
-                // ★ v63: 自動サインイン失敗時のエラーをハンドリング
-                if (response.error === 'popup_closed' || response.error === 'immediate_failed') {
-                    console.log("Automatic sign-in failed. User needs to sign in manually.");
-                    updateAuthStatus(false, "サインインが必要です");
-                    // ★ v63: 手動サインインが必要なため、エラーメッセージを表示
-                    showError('「Google サインイン」ボタンを押して、スプレッドシートへのアクセスを許可してください。');
+                console.error("Google Auth Error:", response.error, response.error_description);
+
+                // 手動サインインがキャンセルされた場合
+                if (response.error === "popup_closed_by_user") {
+                    showError(`サインインがキャンセルされました。`);
+                    updateAuthStatus(false, "サインインがキャンセルされました");
+                    return;
+                }
+                
+                // 自動サインイン(prompt: 'none')が失敗した場合
+                if (response.error === "consent_required" || response.error === "login_required" || response.error === "user_logged_out" || response.error === "immediate_failed") {
+                    console.log("Silent sign-in failed. Manual sign-in required.");
+                    if (googleAuthButton) googleAuthButton.disabled = false;
+                    updateAuthStatus(false, "Google認証準備完了"); // 手動サインインを促す
+                    
+                    // 自動サインイン失敗は「エラー」ではなく、単に「手動サインインが必要」な状態なので、
+                    // ここでエラー表示はしない。UIは「サインイン」を待つ状態になる。
                     const loadingEl = document.getElementById('dashboard-loading');
                     if (loadingEl) loadingEl.style.display = 'none';
-                } else {
-                    console.error("Google Auth Error:", response.error);
-                    showError(`サインイン失敗: ${response.error}`);
-                    updateAuthStatus(false, "サインイン失敗");
+
+                    return; 
                 }
+
+                // その他の致命的なエラー
+                showError(`サインイン失敗: ${response.error}`);
+                updateAuthStatus(false, "サインイン失敗");
                 return;
             }
-
-            // ★ v63: (自動または手動の) サインイン成功
+            
             googleTokenResponse = response;
             if (gapi.client) gapi.client.setToken(response);
             
@@ -998,6 +1060,15 @@
                 googleAuthButton.classList.toggle('hover:bg-blue-700', !isSignedIn);
                 googleAuthButton.classList.toggle('bg-gray-500', isSignedIn);
                 googleAuthButton.classList.toggle('hover:bg-gray-600', isSignedIn);
+                
+                // ★ v63: 自動サインイン試行中はボタンを無効化
+                if (message === "自動サインイン試行中...") {
+                    googleAuthButton.disabled = true;
+                } else if (!appSettings.clientId) {
+                     googleAuthButton.disabled = true; // ClientIDがなければ無効
+                } else {
+                    googleAuthButton.disabled = false; // それ以外は有効
+                }
             }
             if (googleAuthStatus) {
                 googleAuthStatus.textContent = message;
@@ -1075,7 +1146,6 @@
                     console.log("ClientID changed or set. Re-initializing Google Clients.");
                     // TokenClient をリセット (gapi/gis はリセット不要)
                     tokenClient = null; 
-                    // ★ v63: 自動サインインを再度試行
                     await tryInitGoogleClients();
                 }
                 
@@ -1283,7 +1353,7 @@
         // データ取得・解析処理
         // ----------------------------------------
         
-        // v62: 2行1組の結合セルに対応
+        // 2行1組の結合セルに対応
         // Google Sheets API (gapi) からの応答をパース
         function parseGapiResponse(valueRanges, mapping) {
             if (!mapping || !mapping.date) {
@@ -1297,15 +1367,15 @@
                 }
             }
             
-            const dateRegex = /^\s*"?\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}\/\d{1,2})\s*"?\s*$/i;
+            const dateRegex = /^\s*"?\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}\/\d{1,2}|\d{1,2}月\d{1,2}日?)\s*"?\s*$/i;
             const data = [];
 
             // valueRanges は [ { values: [...] }, { values: [...] } ] という構造
             for (const sheetData of valueRanges) {
                 const lines = sheetData.values || [];
                 
-                // v62: 2行1組で処理するため、インデックスを使ったループに変更
-                for (let i = 0; i < lines.length; i += 2) { 
+                // 2行1組で処理するため、インデックスを使ったループに変更
+                for (let i = 0; i < lines.length; i++) { 
                     const columns = lines[i]; // 2行のうちの1行目 (結合セルの値が入っている行)
                     
                     if (!columns) continue; // lines[i] が存在しない場合 (例: 奇数行)
@@ -1341,41 +1411,45 @@
         }
 
         // 手動入力データ用のパーサー
-        function parseManualData(manualText, mapping) {
-            const dateRegex = /^\s*"?\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}\/\d{1,2})\s*"?\s*$/i;
-            const lines = manualText.trim().split('\n');
-            const data = [];
-            
-            for (const line of lines) {
-                const parts = line.split(',');
-                if (parts.length < 2) continue;
-                
-                const dateVal = parts[0].trim();
-                const distVal = parts[1].trim();
+        // 手動入力データ用のパーサー
+        // 手動入力データ用のパーサー
+        function parseManualData(manualText, mapping) {
+            const dateRegex = /^\s*"?\s*(\d{4}[-\/]\d{1,2}[-\/]\d{1,2}|\d{1,2}\/\d{1,2}|\d{1,2}月\d{1,2}日?)\s*"?\s*$/i; // 日本語対応
+            const lines = manualText.trim().split('\n');
+            const data = [];
+            
+            for (const line of lines) {
+                const parts = line.split(',');
+                if (parts.length < 2) continue;
+                
+                const dateVal = parts[0].trim();
+                const distVal = parts[1].trim();
 
-                if (dateVal && dateRegex.test(dateVal)) {
-                     const cleanValue = (val) => {
-                         if (val === undefined || val === null) return null;
-                         const trimmedVal = val.trim().replace(/^["']|["']$/g, '').trim();
-                         if (trimmedVal === "") return null;
-                         const num = parseFloat(trimmedVal);
-                         return isNaN(num) ? null : num;
-                    };
-                    const cleanDate = dateVal.trim().replace(/^["']|["']$/g, '').trim();
-                    
-                    data.push({
-                        date: cleanDate,
-                        distance: cleanValue(distVal),
-                        morningWeight: null,
-                        eveningWeight: null,
-                        wakingHr: null,
-                        practiceHr: null,
-                        sleep: null,
-                    });
-                }
-            }
-            return data;
-        }
+                if (dateVal && dateRegex.test(dateVal)) {
+                     const cleanValue = (val) => {
+                         if (val === undefined || val === null) return null;
+                         const trimmedVal = val.trim().replace(/^["']|["']$/g, '').trim();
+                         if (trimmedVal === "") return null;
+                         const num = parseFloat(trimmedVal);
+                   return isNaN(num) ? null : num;
+                    };
+                    const cleanDate = dateVal.trim().replace(/^["']|["']$/g, '').trim();
+                    
+                    data.push({
+
+                        date: cleanDate,
+                        distance: cleanValue(distVal),
+                        morningWeight: null,
+                  eveningWeight: null,
+                        wakingHr: null,
+
+                        practiceHr: null,
+                        sleep: null,
+                });
+                }
+            }
+            return data;
+     }
 
 
         // データ読み込みのメインロジック (GAPI/手動 分岐)
@@ -1399,10 +1473,12 @@
 
             try {
                 if (!settings) {
-                    showError('「設定」ページで、入力方法と列設定を保存してください。');
+                    // ★ v63: 自動サインイン失敗時に handleTokenResponse がエラーを出すので、
+                    // ここではエラーを表示せず、手動サインインを待つ
+                    if (googleAuthStatus.textContent !== "Google認証準備完了") {
+                         showError('「設定」ページで、入力方法と列設定を保存してください。');
+                    }
                     baseData = [];
-                // v61: エラー修正。 if (!settings) の場合に settings.dataSource を読みに行かないよう、
-                //           else if / else で残りのロジックをラップする
                 } else if (settings.dataSource === 'manual') {
                     // --- 手動データの場合 ---
                     console.log("Loading data from: Manual Input");
@@ -1419,11 +1495,9 @@
                     // --- Google連携の場合 ---
                     console.log("Loading data from: Google Sheets API");
                     if (!googleTokenResponse || !googleTokenResponse.access_token) {
-                        // ★ v63: 自動サインイン処理中はまだエラーにしない
-                        if (appSettings.dataSource === 'google') {
-                             console.log("Waiting for automatic sign-in...");
-                             // showError は handleTokenResponse のエラー側で処理される
-                        }
+                        // ★ v63: 自動サインイン処理が走るため、このエラーは handleTokenResponse に任せる
+                        // showError('「Google サインイン」ボタンを押して、スプレッドシートへのアクセスを許可してください。');
+                        console.warn("loadAndDisplayData called without access token. Waiting for auth.");
                         baseData = []; // baseData をリセット
                         return; // Google連携の場合はサインイン必須
                     }
@@ -1450,7 +1524,7 @@
                     
                     const response = await Promise.race([
                         gapiCall,
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Google Sheets API request timed out (10s)')), 10000))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('GoogleスプレッドシートAPIへのリクエストがタイムアウトしました（10秒）')), 10000))
                     ]);
                     
                     baseData = parseGapiResponse(response.result.valueRanges, settings.mapping); // baseData をセット
@@ -1519,11 +1593,8 @@
             if (appData.length === 0) {
                  // baseData も quickLogs も空の場合
                  if (baseData.length === 0 && Object.keys(quickLogs).length === 0) {
-                    // ★ v63: 自動サインイン処理中の可能性もあるため、エラー表示を抑制
-                    if (appSettings.dataSource === 'google' && !googleTokenResponse) {
-                        // (自動サインインがまだ完了していない or 失敗待ち)
-                        console.log("No data yet, waiting for sign-in...");
-                    } else {
+                    // ★ v63: 自動サインイン試行中はエラーを表示しない
+                    if (googleAuthStatus.textContent !== "自動サインイン試行中...") {
                         showError('データを読み込めませんでした。設定ページを確認するか、ダッシュボードから手動でデータを入力してください。');
                     }
                  } else {
@@ -1624,49 +1695,43 @@
         }
         
         function calculateWeeklyAverage(data, key) {
-            if (!data || data.length === 0) {
-                return null;
-            }
+            if (!data || data.length === 0) {
+                return null;
+            }
 
-            const latestDate = new Date(); // 「今日」
-            latestDate.setHours(0, 0, 0, 0); 
+            // ★ 修正: 基準日を「データの最後の日」ではなく「今日」にする
+            const latestDate = new Date();
+            latestDate.setHours(0, 0, 0, 0);
 
-            const startDate = new Date(latestDate.getTime());
-            startDate.setDate(startDate.getDate() - 6); // 7日間 (今日を含む)
+            const startDate = new Date(latestDate.getTime());
+            startDate.setDate(startDate.getDate() - 6); // 7日間 (latestDateを含む)
 
-            const recentData = data.filter(day => {
-                const d = parseDateToReal(day.date); // 実日付に変換
-                return d && d >= startDate && d <= latestDate;
-            });
-            
-            if (recentData.length === 0) {
-                return null; // この7日間にデータなし
-            }
+            const recentData = data.filter(day => {
+                const d = parseDateToReal(day.date); // 実日付に変換
+                return d && d >= startDate && d <= latestDate;
+            });
+            
+            if (recentData.length === 0) {
+                return null; // この7日間にデータなし
+            }
 
-            let includedDays = 0;
-            const totalValue = recentData.reduce((sum, day) => {
-                const value = day[key];
-                if (value !== null && value !== undefined && !isNaN(parseFloat(value))) {
-                    const numValue = parseFloat(value);
-                    if (key === 'distance') {
-                        if (numValue >= 10) { 
-                            includedDays++;
-                            return sum + numValue;
-                        }
-                    } else {
-                        includedDays++;
-                        return sum + numValue;
-                    }
-                }
-                return sum;
-            }, 0);
-            
-            if (includedDays > 0) {
-                return totalValue / includedDays;
-            } else {
-                return null; // 有効なデータがなかった
-            }
-        }
+            let includedDays = 0;
+            const totalValue = recentData.reduce((sum, day) => {
+                const value = day[key];
+                if (value !== null && value !== undefined && !isNaN(parseFloat(value))) {
+                    const numValue = parseFloat(value);
+                    includedDays++;
+                    return sum + numValue;
+                }
+                return sum;
+            }, 0);
+            
+            if (includedDays > 0) {
+                return totalValue / includedDays;
+            } else {
+                return null; // 有効なデータがなかった
+            }
+        }
 
 
         function updateDashboard(data) {
@@ -2015,15 +2080,15 @@
             
             let includedDays = 0;
             const totalDistance = recentData.reduce((sum, day) => {
-                const dist = day.distance || 0;
-                if (dist >= 10) { 
+                // Only include days with a recorded distance value in the average.
+                if (day.distance !== null && day.distance !== undefined) {
                     includedDays++;
-                    return sum + dist;
+                    return sum + (day.distance || 0);
                 }
                 return sum;
             }, 0);
             
-            console.log(`[calcAvg] Total distance (>=10km): ${totalDistance} km from ${includedDays} days.`);
+            console.log(`[calcAvg] Total distance: ${totalDistance} km from ${includedDays} days.`);
             
             let dailyAvg = 0;
             if (includedDays > 0) {
@@ -2077,15 +2142,16 @@
             // 4. 外れ値(10km未満)を除外して合計距離を計算
             let includedDays = 0;
             const totalDistance = recentData.reduce((sum, day) => {
-                const dist = day.distance || 0;
-                if (dist >= 10) { // 外れ値除外ルール
+                // The outlier exclusion rule (>=10km) has been removed to include all distances.
+                // Only include days with a recorded distance value in the average.
+                if (day.distance !== null && day.distance !== undefined) {
                     includedDays++;
-                    return sum + dist;
+                    return sum + (day.distance || 0);
                 }
                 return sum;
             }, 0);
             
-            console.log(`[calcAvgForm] Total distance (>=10km): ${totalDistance} km from ${includedDays} days.`);
+            console.log(`[calcAvgForm] Total distance: ${totalDistance} km from ${includedDays} days.`);
             
             // 5. 日平均を計算 (「外れ値を除外した日数」で割る)
             let dailyAvg = 0;
@@ -2451,18 +2517,57 @@
         }
 
         // ----------------------------------------
-        // 初期化処理
+        // 初期化
         // ----------------------------------------
-        document.addEventListener('DOMContentLoaded', async () => {
-            
-            // ここで DOM 要素をすべて取得
+        async function initApp() {
+            try {
+                // 1. 設定を読み込む
+                const settings = await loadSettings();
+                
+                // 2. クイックログとテーパリング計画を読み込む
+                await loadQuickLogs();
+                await loadTaperPlans();
+
+                // 3. Google API/GIS の初期化をポーリングで開始
+                const initPoll = setInterval(() => {
+                    tryInitGoogleClients().then(() => {
+                        // 準備が整ったらポーリングを停止
+                        if (tokenClient || (appSettings && appSettings.dataSource === 'manual')) {
+                            clearInterval(initPoll);
+                        }
+                    });
+                }, 200); // 200msごとにチェック
+
+                // 4. 初期データを読み込んで表示
+                if (settings && settings.dataSource === 'manual') {
+                    console.log("Initial load for manual data source.");
+                    await loadAndDisplayData(settings);
+                } else {
+                    // Google連携の場合、または設定がまだない場合
+                    console.log("Google data source selected or no settings yet. Waiting for auth flow.");
+                    const loadingEl = document.getElementById('dashboard-loading');
+                    const summaryTopEl = document.getElementById('dashboard-summary-top');
+                    const summaryBottomEl = document.getElementById('dashboard-summary-bottom');
+                    const errorEl = document.getElementById('dashboard-error');
+                    if(loadingEl) loadingEl.style.display = 'flex';
+                    if(summaryTopEl) summaryTopEl.style.display = 'none';
+                    if(summaryBottomEl) summaryBottomEl.style.display = 'none';
+                    if(errorEl) errorEl.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error("Initialization failed:", error);
+                showError(error.message || "初期化中に不明なエラーが発生しました。");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM要素の取得 ---
             navLinks = document.querySelectorAll('.nav-link');
             pages = document.querySelectorAll('.page-content');
             mobileMenuButton = document.getElementById('mobile-menu-button');
             googleAuthButton = document.getElementById('google-auth-button');
             googleAuthStatus = document.getElementById('google-auth-status');
-            
-            // 設定ページ
             dataSourceGoogle = document.getElementById('data-source-google');
             dataSourceManual = document.getElementById('data-source-manual');
             settingsGoogleContainer = document.getElementById('settings-google-container');
@@ -2471,8 +2576,6 @@
             googleSpreadsheetIdInput = document.getElementById('google-spreadsheet-id');
             googleSheetNamesInput = document.getElementById('google-sheet-names');
             manualDataInput = document.getElementById('manual-data-input');
-            saveButton = document.getElementById('save-settings-button');
-            saveStatus = document.getElementById('save-status');
             mappingInputs = {
                 date: document.getElementById('col-date'),
                 distance: document.getElementById('col-distance'),
@@ -2482,8 +2585,8 @@
                 practiceHr: document.getElementById('col-practice-hr'),
                 sleep: document.getElementById('col-sleep'),
             };
-
-            // クイックログフォーム
+            saveSettingsButton = document.getElementById('save-settings-button');
+            saveStatus = document.getElementById('save-status');
             logDateInput = document.getElementById('log-date');
             logDistanceInput = document.getElementById('log-distance');
             logMorningWeightInput = document.getElementById('log-morning-weight');
@@ -2493,8 +2596,6 @@
             saveLogButton = document.getElementById('save-log-button');
             quickLogSuccess = document.getElementById('quick-log-success');
             quickLogError = document.getElementById('quick-log-error');
-            
-            // テーパリングページ
             newPlanButton = document.getElementById('new-plan-button');
             planFormContainer = document.getElementById('plan-form-container');
             planAvgDistanceSpan = document.getElementById('plan-avg-distance');
@@ -2509,115 +2610,47 @@
             planFinalLoad = document.getElementById('plan-final-load');
             planEditId = document.getElementById('plan-edit-id');
 
-            // ここでイベントリスナーをすべて登録
-            try {
-                // ページ切り替え
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const pageId = link.dataset.page;
-                        showPage(pageId);
-                        const navContent = document.getElementById('nav-content');
-                        if (window.innerWidth < 768) {
-                            if (navContent) navContent.classList.add('hidden');
-                        }
-                    });
-                });
-                
-                if (mobileMenuButton) {
-                    mobileMenuButton.addEventListener('click', () => {
-                        const navContent = document.getElementById('nav-content');
-                        if (navContent) navContent.classList.toggle('hidden');
-                    });
-                }
-
-                // 設定ページ
-                if (dataSourceGoogle) {
-                    dataSourceGoogle.addEventListener('change', () => toggleDataSourceView('google'));
-                }
-                if (dataSourceManual) {
-                    dataSourceManual.addEventListener('change', () => toggleDataSourceView('manual'));
-                }
-                if (saveButton) {
-                    saveButton.addEventListener('click', saveSettings);
-                }
-                if (googleAuthButton) {
-                    googleAuthButton.addEventListener('click', handleAuthClick);
-                }
-
-                // クイックログ
-                if (saveLogButton) {
-                    saveLogButton.addEventListener('click', saveQuickLog);
-                }
-                if (logDateInput) {
-                    logDateInput.addEventListener('change', handleLogDateChange);
-                }
-
-
-                // テーパリングページ
-                if (newPlanButton) {
-                    newPlanButton.addEventListener('click', showNewPlanForm);
-                }
-                if (savePlanButton) { 
-                    savePlanButton.addEventListener('click', saveTaperPlan);
-                }
-                if (cancelPlanButton) { 
-                    cancelPlanButton.addEventListener('click', cancelPlanForm);
-                }
-                if (planRaceDate) {
-                    planRaceDate.addEventListener('change', handleFormChange);
-                }
-                if (planDuration) {
-                    planDuration.addEventListener('change', handleFormChange);
-                }
-
-                // グラフ
-                const chartToggles = document.querySelectorAll('.chart-toggle');
-                chartToggles.forEach(toggle => {
-                    toggle.addEventListener('change', () => {
-                        updateConditionChart(appData); 
-                    });
-                });
-            } catch (e) {
-                console.error("Error setting up event listeners:", e);
-                showError("UIの初期化に失敗しました。");
-            }
-            
-            // localStorageから設定・データを読み込む
-            showPage(defaultPage); 
-            initializeChart();
-            
-            try {
-                const settings = await loadSettings(); // await: localStorageから設定を読み込む
-                await loadTaperPlans(); // await: localStorageから計画を読み込む
-                await loadQuickLogs(); // localStorageからクイックログを読み込む
-                
-                // GAPI/GISの初期化ポーリングを開始
-                const gapiPollInterval = setInterval(async () => {
-                    // tryInitGoogleClients は gapiReady/gisReady/gapiSheetsReady をチェック/設定する
-                    await tryInitGoogleClients(); 
-                    
-                    // TokenClient が正常に初期化されたらポーリングを停止
-                    if (tokenClient || (appSettings && appSettings.dataSource === 'manual')) {
-                        clearInterval(gapiPollInterval);
+            // --- イベントリスナーの設定 ---
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    showPage(pageId);
+                    const navContent = document.getElementById('nav-content');
+                    if (navContent.classList.contains('flex')) {
+                        navContent.classList.add('hidden');
+                        navContent.classList.remove('flex');
                     }
-                }, 500); // 0.5秒ごとにチェック
-                
-                // 読み込みロジック
-                if (settings && settings.dataSource === 'google') {
-                    // Google連携の場合は、まだデータをロードせず、自動サインインを待つ
-                    // v63: showErrorは tryInitGoogleClients -> handleTokenResponse の中で処理される
-                    console.log("DOM loaded. Waiting for Google auto sign-in...");
-                } else {
-                    // 手動データの場合はすぐにロード (設定がnullの場合もこちら)
-                    await loadAndDisplayData(settings);
+                });
+            });
+            mobileMenuButton.addEventListener('click', () => {
+                const navContent = document.getElementById('nav-content');
+                navContent.classList.toggle('hidden');
+                navContent.classList.toggle('flex');
+            });
+            googleAuthButton.addEventListener('click', handleAuthClick);
+            dataSourceGoogle.addEventListener('change', () => toggleDataSourceView('google'));
+            dataSourceManual.addEventListener('change', () => toggleDataSourceView('manual'));
+            saveSettingsButton.addEventListener('click', saveSettings);
+            logDateInput.addEventListener('change', handleLogDateChange);
+            saveLogButton.addEventListener('click', saveQuickLog);
+            newPlanButton.addEventListener('click', showNewPlanForm);
+            planRaceDate.addEventListener('change', handleFormChange);
+            planDuration.addEventListener('change', handleFormChange);
+            savePlanButton.addEventListener('click', saveTaperPlan);
+            cancelPlanButton.addEventListener('click', cancelPlanForm);
+            document.getElementById('chart-controls').addEventListener('change', (e) => {
+                if (e.target.classList.contains('chart-toggle')) {
+                    updateConditionChart(appData);
                 }
-                
-            } catch(e) {
-                console.error("Failed during data loading sequence:", e);
-                showError(e.message || "データの読み込み中に不明なエラーが発生しました。");
-            }
+            });
+
+            // --- 初期化処理の開始 ---
+            initApp();
             
+            // --- 同期的な初期表示 ---
+            showPage(defaultPage);
+            initializeChart();
         });
 
     </script>
